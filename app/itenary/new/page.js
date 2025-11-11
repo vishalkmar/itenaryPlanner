@@ -7,6 +7,7 @@ import Accommodation from "@/components/items/Accommodation";
 import Meal from "@/components/items/Meal";
 import Inclusion from "@/components/items/Inclusions";
 import Exclusion from "@/components/items/exclusion";
+import Markup from "@/components/items/Markup";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -55,7 +56,19 @@ export default function NewItenary(){
                     useQuoteStore.getState().flushPendingUpdate();
                }
 
-               const finalData = useQuoteStore.getState().quoteData;
+               // ensure any pending debounced update is flushed
+               const store = useQuoteStore.getState();
+               if (store.flushPendingUpdate) store.flushPendingUpdate();
+
+               // grab current quoteData and compute authoritative totals (including markup)
+               const finalData = store.quoteData || {};
+               if (store._computeMainTotal) {
+                    const computed = store._computeMainTotal(finalData);
+                    finalData.totals = { ...(finalData.totals || {}), ...computed };
+               }
+
+               console.log("ye final data hai new itenery ka ",finalData)
+
                const res = await fetch('/api/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -67,6 +80,7 @@ export default function NewItenary(){
                     setSubmitting(false);
                     return;
                }
+               console.log(json)
                setSuccess(true);
                if (typeof window !== 'undefined') alert('Quote created successfully ✅');
                // Optional: redirect to dashboard or preview
@@ -89,6 +103,7 @@ export default function NewItenary(){
                     <Meal syncWithStore={true} showNav={false} />
                     <Inclusion syncWithStore={true} showNav={false} />
                     <Exclusion syncWithStore={true} showNav={false} />
+                    <Markup syncWithStore={true} showNav={false} />
 
                     {/* Submit button at bottom */}
                     <div className="flex justify-end pt-4">

@@ -28,7 +28,17 @@ const QuoteZ = z.object({
   meal: z.object({ meals: z.array(MealItemZ).optional(), totalPrice: z.number().optional().default(0) }).optional(),
   inclusion: z.object({ inclusions: z.array(z.string()).optional(), visaAmount: z.number().optional().default(0) }).optional(),
   exclusion: z.object({ exclusions: z.array(z.string()).optional() }).optional(),
-  totals: z.object({ grandTotal: z.number().optional().default(0) }).optional(),
+  totals: z.object({
+    mainTotal: z.number().optional().default(0),
+    itineraryTotal: z.number().optional().default(0),
+    accommodationTotal: z.number().optional().default(0),
+    mealTotal: z.number().optional().default(0),
+    visaAmount: z.number().optional().default(0),
+    hasVisa: z.boolean().optional().default(false),
+    markupPercent: z.number().optional().default(0),
+    markupAmount: z.number().optional().default(0),
+    grandTotal: z.number().optional().default(0),
+  }).optional(),
   meta: z.object({ title: z.string().optional(), userId: z.string().optional() }).optional(),
 });
 
@@ -65,6 +75,11 @@ export async function POST(request) {
     const mainTotal =
       Number(itineraryTotal) + Number(accommodationTotal) + Number(mealTotal) - Number(visaAmount);
 
+    // compute markup (if provided) and final grand total
+    const markupPercent = Number(q?.totals?.markupPercent || 0);
+    const markupAmount = Number(((mainTotal * markupPercent) / 100) || 0);
+    const grandTotal = Number(mainTotal) + Number(markupAmount);
+
     // attach computed totals and normalized inclusion visaAmount
     q.totals = {
       mainTotal,
@@ -73,7 +88,9 @@ export async function POST(request) {
       mealTotal,
       visaAmount,
       hasVisa,
-      grandTotal: mainTotal,
+      markupPercent,
+      markupAmount,
+      grandTotal,
     };
 
     if (!q.inclusion) q.inclusion = {};

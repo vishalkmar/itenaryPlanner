@@ -76,6 +76,17 @@ const QuoteSchema = new mongoose.Schema(
 
     // Optional totals/metadata
     totals: {
+      // mainTotal: total before any markup
+      mainTotal: { type: Number, default: 0 },
+      itineraryTotal: { type: Number, default: 0 },
+      accommodationTotal: { type: Number, default: 0 },
+      mealTotal: { type: Number, default: 0 },
+      visaAmount: { type: Number, default: 0 },
+      hasVisa: { type: Boolean, default: false },
+      // markup fields
+      markupPercent: { type: Number, default: 0 },
+      markupAmount: { type: Number, default: 0 },
+      // grand total after applying markup
       grandTotal: { type: Number, default: 0 },
     },
 

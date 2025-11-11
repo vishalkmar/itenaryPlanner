@@ -12,8 +12,10 @@ export default function GeneratePdfButton({ id }){
   async function generate(){
     try{
       setLoading(true);
-      const res = await fetch(`/api/quotes/${id}`);
-      const q = await res.json();
+      // fetch single quote document
+      const res = await fetch(`/api/quote/${id}`);
+      const json = await res.json();
+      const q = json?.data || json; // support both shapes
       const html = quoteToHtml(q);
       const html2pdf = (await import("html2pdf.js")).default;
       const fname = sanitizeFileName(q.agentSubject || q.subject || `quote_${id}`) + ".pdf";

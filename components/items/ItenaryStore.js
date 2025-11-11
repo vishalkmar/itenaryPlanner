@@ -55,7 +55,22 @@ const useQuoteStore = create(
             Number(mealTotal) -
             Number(visaAmount);
 
-          return { mainTotal, itineraryTotal, accommodationTotal, mealTotal, visaAmount, hasVisa };
+          // markup: percentage applied on the computed mainTotal
+          const markupPercent = Number(qd?.totals?.markupPercent || 0);
+          const markupAmount = Number(((mainTotal * markupPercent) / 100) || 0);
+          const grandTotal = Number(mainTotal) + Number(markupAmount);
+
+          return {
+            mainTotal,
+            itineraryTotal,
+            accommodationTotal,
+            mealTotal,
+            visaAmount,
+            hasVisa,
+            markupPercent,
+            markupAmount,
+            grandTotal,
+          };
         },
 
         // debounced update: coalesce rapid updates into one set

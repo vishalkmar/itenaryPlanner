@@ -9,6 +9,7 @@ import Accommodation from "../../../components/items/Accommodation";
 import Meal from "../../../components/items/Meal";
 import Inclusion from "../../../components/items/Inclusions";
 import Exclusion from "../../../components/items/exclusion";
+import Markup from "../../../components/items/Markup";
 
 
 export default function EditQuotePage() {
@@ -57,9 +58,18 @@ export default function EditQuotePage() {
     setSaving(true);
     try {
       // flush pending debounced updates
-      if (useQuoteStore.getState().flushPendingUpdate) useQuoteStore.getState().flushPendingUpdate();
+      const store = useQuoteStore.getState();
+      if (store.flushPendingUpdate) store.flushPendingUpdate();
 
-      const finalData = useQuoteStore.getState().quoteData;
+      // compute authoritative totals (including markup) and attach before PATCH
+      const finalData = store.quoteData || {};
+      if (store._computeMainTotal) {
+        const computed = store._computeMainTotal(finalData);
+        finalData.totals = { ...(finalData.totals || {}), ...computed };
+      }
+
+         console.log("ye final data hai new edit  ka ",finalData)
+         
       const res = await fetch(`/api/quote/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -71,7 +81,7 @@ export default function EditQuotePage() {
         setSaving(false);
         return;
       }
-
+       console.log(json)
       // update store with saved doc
       useQuoteStore.setState({ quoteData: json.data });
       setSuccess(true);
@@ -115,6 +125,7 @@ export default function EditQuotePage() {
   <Meal syncWithStore={true} showNav={false} />
   <Inclusion syncWithStore={true} showNav={false} />
   <Exclusion syncWithStore={true} showNav={false} />
+  <Markup syncWithStore={true} showNav={false} />
 
         {/* Save All (bottom) */}
         <div className="pt-4">

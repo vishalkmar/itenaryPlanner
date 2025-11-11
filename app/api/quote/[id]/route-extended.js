@@ -52,7 +52,12 @@ export async function PATCH(request, { params }) {
     const visaAmount = hasVisa ? -Math.abs(visaRaw) : visaRaw;
 
     const mainTotal =
-      Number(itineraryTotal) + Number(accommodationTotal) + Number(mealTotal) + Number(visaAmount);
+      Number(itineraryTotal) + Number(accommodationTotal) + Number(mealTotal) - Number(visaAmount);
+
+    // compute markup (if provided)
+    const markupPercent = Number(q?.totals?.markupPercent || 0);
+    const markupAmount = Number(((mainTotal * markupPercent) / 100) || 0);
+    const grandTotal = Number(mainTotal) + Number(markupAmount);
 
     // Update totals
     q.totals = {
@@ -62,7 +67,9 @@ export async function PATCH(request, { params }) {
       mealTotal,
       visaAmount,
       hasVisa,
-      grandTotal: mainTotal,
+      markupPercent,
+      markupAmount,
+      grandTotal,
     };
 
     if (!q.inclusion) q.inclusion = {};
