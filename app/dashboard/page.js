@@ -109,7 +109,7 @@ export default function DashboardPage() {
                         : "-"}
                     </td>
                     <td className="p-3 truncate max-w-xs">{quote.accommodation && quote.accommodation.length ? (quote.accommodation[0].place || quote.accommodation[0].otherPlace || "-") : "-"}</td>
-                    <td className="p-3 font-semibold text-emerald-400">{quote.totals?.mainTotal?.toLocaleString() ?? "—"}</td>
+                    <td className="p-3 font-semibold text-emerald-400">{quote.totals?.grandTotal?.toLocaleString() ?? "—"}</td>
                     <td className="p-3 text-xs hidden lg:table-cell text-gray-400">{quote.createdAt ? new Date(quote.createdAt).toLocaleDateString() : "—"}</td>
                     <td className="p-3 text-center flex justify-center gap-2">
                       {/* View */}

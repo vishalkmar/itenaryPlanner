@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Pencil, X, Plus } from "lucide-react";
 import useQuoteStore from "./ItenaryStore";
 
-export default function Inclusion({ onNext, onBack, syncWithStore = false }) {
+export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWithStore = false, showNav = true }) {
   const defaultInclusions = [
     "4 nights accommodation in 4★ hotel",
     "Visa",
@@ -177,20 +177,12 @@ export default function Inclusion({ onNext, onBack, syncWithStore = false }) {
       </div>
 
       {/* Navigation */}
-      <div className="mt-6 flex justify-between">
-        <button
-          onClick={onBack}
-          className="bg-gray-700 hover:bg-gray-800 px-4 py-2 rounded-lg"
-        >
-          Back
-        </button>
-        <button
-          onClick={handleNext}
-          className="bg-gradient-to-br from-cyan-500 to-emerald-500 hover:opacity-90 px-4 py-2 rounded-lg"
-        >
-          Next
-        </button>
-      </div>
+      {showNav && (
+        <div className="mt-6 flex justify-between">
+          <button onClick={onBack} className="bg-gray-700 hover:bg-gray-800 px-4 py-2 rounded-lg">Back</button>
+          <button onClick={handleNext} className="bg-gradient-to-br from-cyan-500 to-emerald-500 hover:opacity-90 px-4 py-2 rounded-lg">Next</button>
+        </div>
+      )}
     </div>
   );
 }

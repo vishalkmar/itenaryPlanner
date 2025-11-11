@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { X, Check, Plus } from "lucide-react";
 import useQuoteStore from "./ItenaryStore";
 
-export default function Meal({ onBack, onNext, syncWithStore = false }) {
+export default function Meal({ onBack = () => {}, onNext = () => {}, syncWithStore = false, showNav = true }) {
   const { updateStepData, quoteData } = useQuoteStore();
 
   const [mealList, setMealList] = useState(() =>
@@ -109,10 +109,12 @@ export default function Meal({ onBack, onNext, syncWithStore = false }) {
       <div className="mt-6 text-right text-lg font-semibold text-emerald-400">Total Meal Cost: ₹{totalPrice.toLocaleString()}</div>
 
       {/* Navigation */}
-      <div className="mt-6 flex justify-between">
-        <button onClick={onBack} className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg">Back</button>
-        <button onClick={handleNextStep} className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg">Next</button>
-      </div>
+      {showNav && (
+        <div className="mt-6 flex justify-between">
+          <button onClick={onBack} className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg">Back</button>
+          <button onClick={handleNextStep} className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg">Next</button>
+        </div>
+      )}
     </div>
   );
 }

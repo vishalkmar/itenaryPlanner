@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import useQuoteStore from "./ItenaryStore";
 
-export default function Accommodation({ onNext, onBack, syncWithStore = false }) {
+export default function Accommodation({ onNext = () => {}, onBack = () => {}, syncWithStore = false, showNav = true }) {
   const { updateStepData, quoteData } = useQuoteStore();
 
   // 🔹 Hotel rate data
@@ -221,10 +221,12 @@ export default function Accommodation({ onNext, onBack, syncWithStore = false })
       </div>
 
       {/* 🔘 Navigation */}
-      <div className="mt-6 flex justify-between">
-        <button onClick={onBack} className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg">Back</button>
-        <button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">Next</button>
-      </div>
+      {showNav && (
+        <div className="mt-6 flex justify-between">
+          <button onClick={onBack} className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg">Back</button>
+          <button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">Next</button>
+        </div>
+      )}
     </div>
   );
 }
