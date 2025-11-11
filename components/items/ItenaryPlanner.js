@@ -1,0 +1,320 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Select from "react-select";
+import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import useQuoteStore from "./ItenaryStore";
+
+
+// ✅ Activity sets per group
+const activitySets = {
+  oneToSix: [
+    { label: "Family Picnic", value: "Family Picnic", price: 120 },
+    { label: "City Sightseeing", value: "City Sightseeing", price: 80 },
+    { label: "Wildlife Safari", value: "Wildlife Safari", price: 150 },
+  ],
+  sixToTen: [
+    { label: "Group Trekking", value: "Group Trekking", price: 180 },
+    { label: "Beach Volleyball", value: "Beach Volleyball", price: 90 },
+    { label: "Boat Party", value: "Boat Party", price: 250 },
+  ],
+  tenToFifteen: [
+    { label: "Team Adventure", value: "Team Adventure", price: 200 },
+    { label: "Cultural Night", value: "Cultural Night", price: 120 },
+    { label: "Mountain Camping", value: "Mountain Camping", price: 300 },
+  ],
+};
+
+export default function ItineraryPlanner({ onNext, onBack, syncWithStore = false }) {
+
+    const { updateStepData, quoteData } = useQuoteStore();
+
+  const [selectedCategory, setSelectedCategory] = useState(() =>
+    quoteData?.itinerary?.selectedCategory || "oneToSix"
+  );
+  const [activityOptions, setActivityOptions] = useState(activitySets.oneToSix);
+
+  const [days, setDays] = useState(() =>
+    quoteData?.itinerary?.days && Array.isArray(quoteData.itinerary.days) && quoteData.itinerary.days.length
+      ? quoteData.itinerary.days
+      : [{ id: 1, title: "Day 1", description: "", activities: [], open: true }]
+  );
+  const [totalActivityPrice, setTotalActivityPrice] = useState(0);
+  const [newActivityName, setNewActivityName] = useState("");
+  const [newActivityPrice, setNewActivityPrice] = useState("");
+
+  // Load full itinerary data when in edit mode
+  useEffect(() => {
+    if (quoteData?.itinerary?.days && Array.isArray(quoteData.itinerary.days)) {
+      setDays(quoteData.itinerary.days);
+      if (quoteData.itinerary.selectedCategory) {
+        setSelectedCategory(quoteData.itinerary.selectedCategory);
+        setActivityOptions(activitySets[quoteData.itinerary.selectedCategory] || activitySets.oneToSix);
+      }
+    }
+  }, [quoteData?.itinerary?.days]);
+
+  useEffect(() => {
+    const total = days.reduce(
+      (sum, day) =>
+        sum + day.activities.reduce((acc, act) => acc + (act.price || 0), 0),
+      0
+    );
+    setTotalActivityPrice(total);
+  }, [days]);
+
+  // when in edit mode, push itinerary to store
+  useEffect(() => {
+    if (syncWithStore) {
+      updateStepData("itinerary", { selectedCategory, days, totalActivityPrice });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory, days, totalActivityPrice, syncWithStore]);
+
+  const handleCategoryChange = (key) => {
+    setSelectedCategory(key);
+    setActivityOptions(activitySets[key]);
+    setDays((prev) =>
+      prev.map((d) => ({
+        ...d,
+        activities: [],
+      }))
+    );
+  };
+
+  const handleAddDay = () => {
+    setDays([
+      ...days.map((d) => ({ ...d, open: false })), // collapse previous
+      {
+        id: days.length + 1,
+        title: `Day ${days.length + 1}`,
+        description: "",
+        activities: [],
+        open: true,
+      },
+    ]);
+  };
+
+  const handleSaveDescription = (id, desc) => {
+    setDays((prev) =>
+      prev.map((day) => (day.id === id ? { ...day, description: desc } : day))
+    );
+  };
+
+  const handleRemoveDay = (id) => {
+    setDays(days.filter((d) => d.id !== id));
+  };
+
+  const handleActivityChange = (selectedOptions, dayId) => {
+    const selectedActivities = selectedOptions
+      ? selectedOptions.map((opt) => ({
+          label: opt.label,
+          value: opt.value,
+          price: opt.price,
+        }))
+      : [];
+
+    setDays((prev) =>
+      prev.map((day) =>
+        day.id === dayId ? { ...day, activities: selectedActivities } : day
+      )
+    );
+  };
+
+  const handleAddNewActivity = () => {
+    if (!newActivityName || !newActivityPrice) return;
+    const newAct = {
+      label: newActivityName,
+      value: newActivityName,
+      price: parseFloat(newActivityPrice),
+    };
+    setActivityOptions([...activityOptions, newAct]);
+    setNewActivityName("");
+    setNewActivityPrice("");
+  };
+
+  const toggleDayOpen = (id) => {
+    setDays((prev) =>
+      prev.map((day) =>
+        day.id === id ? { ...day, open: !day.open } : { ...day, open: false }
+      )
+    );
+  };
+
+  return (
+    <div className="w-full bg-black text-white rounded-2xl p-6 shadow-xl relative z-10">
+      <h2 className="text-3xl font-bold mb-6 text-center">Itinerary Planner</h2>
+
+      {/* 🧭 Category Tabs */}
+      <div className="flex justify-center mb-6 gap-3 flex-wrap">
+        {[
+          { key: "oneToSix", label: "1 - 6 People" },
+          { key: "sixToTen", label: "6 - 10 People" },
+          { key: "tenToFifteen", label: "10 - 15 People" },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => handleCategoryChange(tab.key)}
+            className={`px-4 py-2 rounded-lg font-semibold ${
+              selectedCategory === tab.key
+                ? "bg-white/40 text-black"
+                : "bg-white/10 hover:bg-white/20"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Accordion Days */}
+      {days.map((day) => (
+        <div
+          key={day.id}
+          className="bg-white/10 border border-white/20 rounded-2xl mb-4"
+        >
+          {/* Header */}
+          <div
+            className="flex justify-between items-center px-4 py-3 cursor-pointer bg-white/10 hover:bg-white/20 transition-all"
+            onClick={() => toggleDayOpen(day.id)}
+          >
+            <h3 className="text-lg font-semibold">{day.title}</h3>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemoveDay(day.id);
+                }}
+                className="hover:text-red-400"
+              >
+                <Trash2 size={18} />
+              </button>
+              {day.open ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </div>
+          </div>
+
+          {/* Body */}
+          {day.open && (
+            <div className="p-4 bg-black/40 relative z-20">
+              {/* Description */}
+              <textarea
+                className="w-full bg-white/10 text-white placeholder-white/60 rounded-lg p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-white/40"
+                placeholder="Write day description..."
+                value={day.description}
+                onChange={(e) => handleSaveDescription(day.id, e.target.value)}
+              />
+
+              {/* Activities */}
+              <label className="block mb-2 text-sm font-semibold">
+                Select Activities
+              </label>
+            <Select
+  isMulti
+  menuPortalTarget={typeof window !== "undefined" ? document.body : null} // ✅ safe SSR
+  options={activityOptions}
+  value={day.activities.map((a) => ({
+    label: a.label,
+    value: a.value,
+    price: a.price,
+  }))}
+  onChange={(selected) => handleActivityChange(selected, day.id)}
+  getOptionLabel={(e) => `${e.label} (INR ${e.price})`}
+  className="text-black rounded-lg mb-3"
+  styles={{
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: "#fff", // white background
+      color: "#000", // black text inside dropdown
+    }),
+    option: (base, state) => ({
+      ...base,
+      color: "#000", // black text for options
+      backgroundColor: state.isFocused ? "#e5e7eb" : "#fff", // light gray hover
+      cursor: "pointer",
+    }),
+  }}
+/>
+
+              {/* Add Custom Activity */}
+              <div className="flex items-center gap-2 mb-3">
+                <input
+                  type="text"
+                  placeholder="Activity name"
+                  className="bg-white/10 text-white p-2 rounded-lg flex-1"
+                  value={newActivityName}
+                  onChange={(e) => setNewActivityName(e.target.value)}
+                />
+                <input
+                  type="number"
+                  placeholder="Price"
+                  className="bg-white/10 text-white p-2 rounded-lg w-24"
+                  value={newActivityPrice}
+                  onChange={(e) => setNewActivityPrice(e.target.value)}
+                />
+                <button
+                  onClick={handleAddNewActivity}
+                  className="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg flex items-center gap-1"
+                >
+                  <Plus size={16} /> Add
+                </button>
+              </div>
+
+              {/* Selected Activities */}
+              {day.activities.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {day.activities.map((a, i) => (
+                    <li
+                      key={i}
+                      className="flex justify-between bg-white/10 px-3 py-2 rounded-lg text-sm"
+                    >
+                      <span>{a.label}</span>
+                      <span>INR {a.price}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
+
+      {/* ➕ Add More Days */}
+      <div className="text-center mb-6">
+        <button
+          onClick={handleAddDay}
+          className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-semibold"
+        >
+          + Add More Day
+        </button>
+      </div>
+
+      {/* 💰 Total */}
+      <div className="text-center text-xl font-bold mb-6">
+        Total Activity Cost: INR {totalActivityPrice.toFixed(2)}
+      </div>
+
+      {/* Navigation */}
+      <div className="flex justify-between">
+        <button
+          onClick={onBack}
+          className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg"
+        >
+          Back
+        </button>
+        <button
+   onClick={() => {
+     updateStepData("itinerary", {
+       selectedCategory,
+       days,
+       totalActivityPrice,
+     });
+     onNext();
+   }}
+   className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg"
+ >
+   Next
+ </button>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,96 @@
+import mongoose from "mongoose";
+
+// Sub-schemas (no separate _id for nested docs)
+const ActivitySchema = new mongoose.Schema(
+  {
+    label: { type: String },
+    value: { type: String },
+    price: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
+
+const DaySchema = new mongoose.Schema(
+  {
+    id: { type: Number },
+    title: { type: String },
+    description: { type: String },
+    activities: { type: [ActivitySchema], default: [] },
+    open: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
+const AccommodationSchema = new mongoose.Schema(
+  {
+    hotel: { type: String },
+    otherHotel: { type: String },
+    customRates: {
+      Single: { type: Number, default: 0 },
+      Double: { type: Number, default: 0 },
+      Triple: { type: Number, default: 0 },
+    },
+    place: { type: String },
+    otherPlace: { type: String },
+    nights: { type: Number, default: 0 },
+    adults: { type: Number, default: 0 },
+    children: { type: Number, default: 0 },
+    occupancy: { type: String },
+    rooms: { type: Number, default: 0 },
+    totalPrice: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
+
+const MealSchema = new mongoose.Schema(
+  {
+    type: { type: String },
+    price: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
+
+const QuoteSchema = new mongoose.Schema(
+  {
+    itinerary: {
+      selectedCategory: { type: String },
+      days: { type: [DaySchema], default: [] },
+      totalActivityPrice: { type: Number, default: 0 },
+    },
+
+    accommodation: { type: [AccommodationSchema], default: [] },
+
+    meal: {
+      meals: { type: [MealSchema], default: [] },
+      totalPrice: { type: Number, default: 0 },
+    },
+
+    inclusion: {
+      inclusions: { type: [String], default: [] },
+      visaAmount: { type: Number, default: 0 },
+    },
+
+    exclusion: {
+      exclusions: { type: [String], default: [] },
+    },
+
+    // Optional totals/metadata
+    totals: {
+      grandTotal: { type: Number, default: 0 },
+    },
+
+    meta: {
+      title: { type: String },
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    },
+  },
+  { timestamps: true }
+);
+
+QuoteSchema.pre("save", function (next) {
+  this.updatedAt = Date.now();
+  next();
+});
+
+const Quote = mongoose.models.Quote || mongoose.model("Quote", QuoteSchema);
+export default Quote;
