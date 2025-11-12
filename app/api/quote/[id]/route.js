@@ -77,6 +77,14 @@ export async function PATCH(request, { params }) {
     const markupAmount = Number(((mainTotal * markupPercent) / 100) || 0);
     const grandTotal = Number(mainTotal) + Number(markupAmount);
 
+    // compute price per person (grandTotal / pax)
+    const pax = Number(q?.basic?.pax || 1);
+    const pricePerPerson = Number((grandTotal / pax) || 0);
+
+  // compute activity cost total as itineraryTotal * 238 (required multiplier before persisting)
+  const ACTIVITY_MULTIPLIER = 238;
+  const activityCostTotal = Number((itineraryTotal * ACTIVITY_MULTIPLIER) || 0);
+
     // Update totals
     q.totals = {
       mainTotal,
@@ -88,6 +96,8 @@ export async function PATCH(request, { params }) {
       markupPercent,
       markupAmount,
       grandTotal,
+      pricePerPerson,
+      activityCostTotal,
     };
 
     if (!q.inclusion) q.inclusion = {};

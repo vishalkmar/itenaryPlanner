@@ -138,7 +138,7 @@ export default function QuotePreviewPage() {
                   <div key={day.id} className="p-4 bg-black/30 border border-white/10 rounded-lg hover:border-cyan-500/50 transition">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="text-lg font-bold text-cyan-300">{day.title}</h3>
-                      <span className="text-sm font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded">INR {((day.activities || []).reduce((s,a)=>s+(Number(a.price)||0),0)).toLocaleString()}</span>
+                      
                     </div>
                     {day.description && <p className="text-gray-300 text-sm mb-3 whitespace-pre-wrap">{day.description}</p>}
                     {day.activities && day.activities.length > 0 && (
@@ -147,7 +147,7 @@ export default function QuotePreviewPage() {
                         {day.activities.map((a, i) => (
                           <div key={i} className="flex justify-between items-center bg-white/5 p-2 rounded text-sm">
                             <span className="text-gray-200">{a.label}</span>
-                            <span className="text-emerald-400 font-semibold">INR {Number(a.price||0).toLocaleString()}</span>
+                            <span className="text-emerald-400 font-semibold">OMR {Number(a.price||0).toLocaleString()}</span>
                           </div>
                         ))}
                       </div>
@@ -160,7 +160,7 @@ export default function QuotePreviewPage() {
             )}
             <div className="mt-4 pt-4 border-t border-white/10 text-right">
               <p className="text-gray-400">Itinerary Total</p>
-              <p className="text-2xl font-bold text-emerald-400">INR {Number(quote.itinerary?.totalActivityPrice||0).toLocaleString()}</p>
+              <p className="text-2xl font-bold text-emerald-400">INR {Number(quote.itinerary?.totalActivityPrice*238||0).toLocaleString()}</p>
             </div>
           </div>
         </section>
@@ -300,23 +300,7 @@ export default function QuotePreviewPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Breakdown */}
               <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Itinerary Cost</span>
-                  <span className="font-semibold">INR {Number(quote.itinerary?.totalActivityPrice||0).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Accommodation Cost</span>
-                  <span className="font-semibold">INR {Number(quote.accommodation[0].totalPrice||0).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Meals Cost</span>
-                  <span className="font-semibold">INR {Number(quote.meal?.totalPrice||0).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center text-red-300">
-                  <span>Visa Deduction</span>
-                  <span className="font-semibold">INR {Math.abs(Number(totals.visaAmount||0)).toLocaleString()}</span>
-                </div>
-                
+               
               </div>
 
               {/* Markup & Grand Total */}
@@ -330,8 +314,8 @@ export default function QuotePreviewPage() {
                   <span className="font-semibold text-cyan-300">INR {Number(totals.markupAmount||0).toLocaleString()}</span>
                 </div>
                 <div className="border-t border-white/10 pt-3 flex justify-between items-center text-2xl">
-                  <span className="font-bold text-gray-100">Grand Total</span>
-                  <span className="font-bold text-emerald-400">INR {Number(totals.grandTotal||totals.mainTotal||0).toLocaleString()}</span>
+                  <span className="font-bold text-gray-100">Price Per Person</span>
+                  <span className="font-bold text-emerald-400">INR {Number(totals.pricePerPerson || 0).toLocaleString()}</span>
                 </div>
               </div>
             </div>

@@ -63,6 +63,14 @@ const useQuoteStore = create(
           const markupAmount = Number(((mainTotal * markupPercent) / 100) || 0);
           const grandTotal = Number(mainTotal) + Number(markupAmount);
 
+          // price per person: divide grandTotal by PAX
+          const pax = Number(qd?.basic?.pax || 1);
+          const pricePerPerson = Number((grandTotal / pax) || 0);
+
+          // activity cost total: multiply itineraryTotal by fixed INR multiplier (238)
+          const ACTIVITY_MULTIPLIER = 238;
+          const activityCostTotal = Number((itineraryTotal * ACTIVITY_MULTIPLIER) || 0);
+
           return {
             mainTotal,
             itineraryTotal,
@@ -73,6 +81,8 @@ const useQuoteStore = create(
             markupPercent,
             markupAmount,
             grandTotal,
+            pricePerPerson,
+            activityCostTotal,
           };
         },
 

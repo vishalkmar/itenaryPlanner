@@ -26,6 +26,12 @@ const activitySets = {
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
   { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 330, description: "Day1\nPick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp\nDay2\nBallon Tour (8:30 morning)\nWadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
        
+  { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
+  { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
+  
+  { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
+  { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+
   ],
   sixToTen: [
     { label: "Nizwa & Jabal Al Akhdar", value: "Nizwa & Jabal Al Akhdar", price: 130 },
@@ -336,7 +342,7 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
                       className="flex justify-between bg-white/10 px-3 py-2 rounded-lg text-sm"
                     >
                       <span>{a.label}</span>
-                      <span>INR {a.price}</span>
+                      <span>OMR {a.price}</span>
                     </li>
                   ))}
                 </ul>
@@ -356,9 +362,14 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
         </button>
       </div>
 
-      {/* 💰 Total */}
+      {/* 💰 Total (multiplied by INR 238 before persisting) */}
       <div className="text-center text-xl font-bold mb-6">
-        Total Activity Cost: INR {totalActivityPrice.toFixed(2)}
+        {/* multiplier is fixed as per requirement */}
+        {(() => {
+          const ACTIVITY_MULTIPLIER = 238;
+          const multiplied = Number(totalActivityPrice * ACTIVITY_MULTIPLIER || 0);
+          return `Total Activity Cost: INR ${multiplied.toFixed(2)}`;
+        })()}
       </div>
 
       {/* Navigation */}

@@ -317,9 +317,9 @@ function generatePDFHTML(quote) {
           </div>
         </div>
 
-        <!-- Grand Total -->
+        <!-- Price Per Person (displayed as total) -->
         <div class="grand-total">
-          Grand Total: <span class="grand-total-value">₹ ${Number(totals.grandTotal || totals.mainTotal || 0).toLocaleString("en-IN")}</span>
+          Price Per Person: <span class="grand-total-value">₹ ${Number(totals.pricePerPerson || 0).toLocaleString("en-IN")}</span>
         </div>
 
         <!-- Remarks -->

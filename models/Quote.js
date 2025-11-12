@@ -96,6 +96,10 @@ const QuoteSchema = new mongoose.Schema(
       markupAmount: { type: Number, default: 0 },
       // grand total after applying markup
       grandTotal: { type: Number, default: 0 },
+      // price per person (grandTotal / pax)
+      pricePerPerson: { type: Number, default: 0 },
+      // activity cost total stored as itineraryTotal * 238 (INR multiplier)
+      activityCostTotal: { type: Number, default: 0 },
     },
 
     meta: {
