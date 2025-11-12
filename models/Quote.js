@@ -74,6 +74,14 @@ const QuoteSchema = new mongoose.Schema(
       exclusions: { type: [String], default: [] },
     },
 
+    // Basic trip details: date range, nights and pax
+    basic: {
+      startDate: { type: String, default: "" },
+      endDate: { type: String, default: "" },
+      nights: { type: Number, default: 0 },
+      pax: { type: Number, default: 1 },
+    },
+
     // Optional totals/metadata
     totals: {
       // mainTotal: total before any markup

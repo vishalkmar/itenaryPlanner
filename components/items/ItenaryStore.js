@@ -19,8 +19,11 @@ const useQuoteStore = create(
         }
         set((state) => {
           const next = { ...state.quoteData, [step]: data };
-          const totals = (state._computeMainTotal || ((qd) => ({ mainTotal: 0 })))(next);
-          return { quoteData: { ...next, totals } };
+          // Preserve existing totals fields, then merge computed totals
+          const existingTotals = next.totals || {};
+          const computed = (state._computeMainTotal || ((qd) => ({ mainTotal: 0 })))(next);
+          const mergedTotals = { ...existingTotals, ...computed };
+          return { quoteData: { ...next, totals: mergedTotals } };
         });
       };
 

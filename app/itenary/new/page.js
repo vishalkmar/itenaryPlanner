@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import useQuoteStore from "@/components/items/ItenaryStore";
 import ItineraryPlanner from "@/components/items/ItenaryPlanner";
+import BasicDetails from "@/components/items/BasicDetails";
 import Accommodation from "@/components/items/Accommodation";
 import Meal from "@/components/items/Meal";
 import Inclusion from "@/components/items/Inclusions";
@@ -20,6 +21,12 @@ export default function NewItenary(){
           // Reset store to fresh state when creating new itinerary
           useQuoteStore.setState({
                quoteData: {
+                    basic: {
+                         startDate: "",
+                         endDate: "",
+                         nights: 0,
+                         pax: 1,
+                    },
                     itinerary: {
                          selectedCategory: "oneToSix",
                          days: [{ id: 1, title: "Day 1", description: "", activities: [], open: true }],
@@ -43,7 +50,17 @@ export default function NewItenary(){
                     meal: { meals: [{ type: "Breakfast", price: 0 }], totalPrice: 0 },
                     inclusion: { inclusions: ["4 nights accommodation in 4★ hotel", "Visa", "All Transfers", "Half-day Muscat city tour – Qurum Beach, Opera House (outside), Mutrah Souq, Mutrah Fort", "Full-day Nizwa tour – Nizwa Fort, Nizwa Souq", "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Fins Beach"], visaAmount: 0 },
                     exclusion: { exclusions: ["Airfare", "Lunch & Dinner", "Personal expense (Tips, Laundry, Beverage, etc.)", "Early check-in / Late checkout", "GST @5% & TCS @5% as per applicable travel cost"] },
-                    totals: { mainTotal: 0 },
+                    totals: {
+                         mainTotal: 0,
+                         itineraryTotal: 0,
+                         accommodationTotal: 0,
+                         mealTotal: 0,
+                         visaAmount: 0,
+                         hasVisa: false,
+                         markupPercent: 0,
+                         markupAmount: 0,
+                         grandTotal: 0,
+                    },
                },
           });
      }, []);
@@ -98,6 +115,7 @@ export default function NewItenary(){
 
                {/* Single-page editor (all components visible) */}
                <div className="max-w-6xl mx-auto space-y-6">
+                    <BasicDetails syncWithStore={true} showNav={false} />
                     <ItineraryPlanner syncWithStore={true} showNav={false} />
                     <Accommodation syncWithStore={true} showNav={false} />
                     <Meal syncWithStore={true} showNav={false} />

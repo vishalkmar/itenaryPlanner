@@ -99,6 +99,31 @@ export default function QuotePreviewPage() {
           </div>
         </div>
 
+        {/* Basic Details Card */}
+        {quote.basic && (
+          <div className="mb-8 p-5 bg-gradient-to-r from-white/6 to-white/3 border border-white/10 rounded-lg backdrop-blur-sm">
+            <h3 className="text-lg font-bold text-cyan-300 mb-3">Trip Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <p className="text-gray-400 text-sm">Start Date</p>
+                <p className="text-white font-semibold">{quote.basic.startDate ? new Date(quote.basic.startDate).toLocaleDateString() : '—'}</p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">End Date</p>
+                <p className="text-white font-semibold">{quote.basic.endDate ? new Date(quote.basic.endDate).toLocaleDateString() : '—'}</p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Nights</p>
+                <p className="text-white font-semibold">{quote.basic.nights || 0}</p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">PAX</p>
+                <p className="text-white font-semibold">{quote.basic.pax || 0}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Sections */}
         {/* Itinerary */}
         <section className="mb-8 bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-lg overflow-hidden backdrop-blur-sm">

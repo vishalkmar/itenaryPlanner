@@ -22,12 +22,20 @@ const AccommodationZ = z.object({
 
 const MealItemZ = z.object({ type: z.string().optional(), price: z.number().optional().default(0) });
 
+const BasicZ = z.object({
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  nights: z.number().optional().default(0),
+  pax: z.number().optional().default(1),
+}).optional();
+
 const QuoteZ = z.object({
   itinerary: z.object({ selectedCategory: z.string().optional(), days: z.array(DayZ).optional(), totalActivityPrice: z.number().optional().default(0) }).optional(),
   accommodation: z.array(AccommodationZ).optional(),
   meal: z.object({ meals: z.array(MealItemZ).optional(), totalPrice: z.number().optional().default(0) }).optional(),
   inclusion: z.object({ inclusions: z.array(z.string()).optional(), visaAmount: z.number().optional().default(0) }).optional(),
   exclusion: z.object({ exclusions: z.array(z.string()).optional() }).optional(),
+  basic: BasicZ,
   totals: z.object({
     mainTotal: z.number().optional().default(0),
     itineraryTotal: z.number().optional().default(0),
@@ -45,16 +53,22 @@ const QuoteZ = z.object({
 export async function POST(request) {
   try {
     const body = await request.json();
+    console.log("📥 /api/submit received body:", JSON.stringify(body, null, 2));
+    
     const parsed = QuoteZ.safeParse(body);
 
     if (!parsed.success) {
+      console.error("❌ Zod validation failed:", parsed.error.errors);
       return NextResponse.json({ error: parsed.error.errors }, { status: 400 });
     }
+
+    console.log("✅ Zod validation passed. Parsed data:", JSON.stringify(parsed.data, null, 2));
 
     await dbConnect();
 
     // Recompute totals server-side (same logic as client store)
     const q = parsed.data;
+    console.log("📊 Processing quote. basic:", q.basic, "totals:", q.totals);
     const itineraryTotal = q?.itinerary?.totalActivityPrice || 0;
     let accommodationTotal = 0;
     if (Array.isArray(q?.accommodation)) {
@@ -96,7 +110,11 @@ export async function POST(request) {
     if (!q.inclusion) q.inclusion = {};
     q.inclusion.visaAmount = visaAmount;
 
+    console.log("💾 About to save to DB. q.basic:", q.basic, "q.totals:", q.totals);
+
     const doc = await Quote.create(q);
+
+    console.log("✅ Successfully saved to DB. Saved doc.basic:", doc.basic, "doc.totals:", doc.totals);
 
     // ✅ Return full saved document
     return NextResponse.json(

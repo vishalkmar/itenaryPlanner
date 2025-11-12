@@ -10,6 +10,7 @@ import Meal from "../../../components/items/Meal";
 import Inclusion from "../../../components/items/Inclusions";
 import Exclusion from "../../../components/items/exclusion";
 import Markup from "../../../components/items/Markup";
+import BasicDetails from "../../../components/items/BasicDetails";
 
 
 export default function EditQuotePage() {
@@ -69,7 +70,7 @@ export default function EditQuotePage() {
       }
 
          console.log("ye final data hai new edit  ka ",finalData)
-         
+
       const res = await fetch(`/api/quote/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -121,6 +122,7 @@ export default function EditQuotePage() {
 
   {/* Render full form components with sync enabled and hide per-step navigation */}
   <ItineraryPlanner syncWithStore={true} showNav={false} />
+  <BasicDetails syncWithStore={true} showNav={false} />
   <Accommodation syncWithStore={true} showNav={false} />
   <Meal syncWithStore={true} showNav={false} />
   <Inclusion syncWithStore={true} showNav={false} />
