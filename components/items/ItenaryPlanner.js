@@ -24,13 +24,16 @@ const activitySets = {
     { label: "Dimaniyat Island (Without Transfer)", value: "Dimaniyat Island (Without Transfer)", price: 35 },
     { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
-  { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 330, description: "Day1\nPick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp\nDay2\nBallon Tour (8:30 morning)\nWadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
+    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 170, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
+     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 170, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
        
   { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
   { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
   
   { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
   { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+
+   { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
 
   ],
   sixToTen: [
@@ -50,6 +53,14 @@ const activitySets = {
     { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 330, description: "Day1\nPick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp\nDay2\nBallon Tour (8:30 morning)\nWadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
+        
+  { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
+  { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
+  
+  { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
+  { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+
+   { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
   ],
 
   tenToFifteen: [
@@ -69,7 +80,16 @@ const activitySets = {
     { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
   { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 330, description: "Day1\nPick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp\nDay2\nBallon Tour (8:30 morning)\nWadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
-  ],
+        
+  { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
+  { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
+  
+  { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
+  { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+
+   { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
+
+],
 };
 
 export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { }, syncWithStore = false, showNav = true }) {
