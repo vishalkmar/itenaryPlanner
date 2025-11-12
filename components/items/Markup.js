@@ -7,13 +7,19 @@ export default function Markup({ syncWithStore = false, showNav = true }) {
   const { updateStepData, quoteData } = useQuoteStore();
 
   const initialPercent = Number(quoteData?.totals?.markupPercent || 0);
-  const mainTotal = Number(quoteData?.totals?.mainTotal || 0);
+  const accommodationTotal = Number(quoteData?.totals?.accommodationTotal || 0);
+  const activityCostTotal = Number(quoteData?.totals?.activityCostTotal || 0);
+  const mealTotal = Number(quoteData?.totals?.mealTotal || 0);
+  const visaAmount = Number(quoteData?.totals?.visaAmount || 0);
 
   const [percent, setPercent] = useState(initialPercent);
 
   // compute amounts locally for immediate UI feedback
-  const localMarkupAmount = Number(((mainTotal * percent) / 100) || 0);
-  const localGrand = Number(mainTotal) + Number(localMarkupAmount);
+  // mainTotal: accommodation + activityCostTotal + meal - visa
+  const baseTotal = Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) - Number(visaAmount);
+  const localMarkupAmount = Number(((baseTotal * percent) / 100) || 0);
+  // grandTotal: accommodation + activityCostTotal + meal + markupAmount - visa
+  const localGrand = Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) + Number(localMarkupAmount) - Number(visaAmount);
 
   useEffect(() => {
     // when quoteData changes externally (load/edit), sync percent

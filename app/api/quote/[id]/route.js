@@ -69,21 +69,24 @@ export async function PATCH(request, { params }) {
 
     const visaAmount = hasVisa ? -Math.abs(visaRaw) : visaRaw;
 
-    const mainTotal =
-      Number(itineraryTotal) + Number(accommodationTotal) + Number(mealTotal) - Number(visaAmount);
+    // compute activity cost total: itineraryTotal * 238 (INR multiplier)
+    const ACTIVITY_MULTIPLIER = 238;
+    const activityCostTotal = Number((itineraryTotal * ACTIVITY_MULTIPLIER) || 0);
 
-    // compute markup (if provided)
+    // mainTotal: accommodation + activityCostTotal + meal - visa
+    const mainTotal =
+      Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) - Number(visaAmount);
+
+    // markup: percentage applied on mainTotal
     const markupPercent = Number(q?.totals?.markupPercent || 0);
     const markupAmount = Number(((mainTotal * markupPercent) / 100) || 0);
-    const grandTotal = Number(mainTotal) + Number(markupAmount);
+
+    // grandTotal: accommodation + activityCostTotal + meal + markupAmount - visa
+    const grandTotal = Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) + Number(markupAmount) - Number(visaAmount);
 
     // compute price per person (grandTotal / pax)
     const pax = Number(q?.basic?.pax || 1);
     const pricePerPerson = Number((grandTotal / pax) || 0);
-
-  // compute activity cost total as itineraryTotal * 238 (required multiplier before persisting)
-  const ACTIVITY_MULTIPLIER = 238;
-  const activityCostTotal = Number((itineraryTotal * ACTIVITY_MULTIPLIER) || 0);
 
     // Update totals
     q.totals = {

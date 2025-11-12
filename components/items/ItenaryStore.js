@@ -52,24 +52,27 @@ const useQuoteStore = create(
 
           const visaAmount = hasVisa ? -Math.abs(visaRaw) : visaRaw; // negative when included
 
+          // compute activity cost total: itineraryTotal * 238 (INR multiplier)
+          const ACTIVITY_MULTIPLIER = 238;
+          const activityCostTotal = Number((itineraryTotal * ACTIVITY_MULTIPLIER) || 0);
+
+          // mainTotal: accommodation + activityCostTotal + meal - visa
           const mainTotal =
-            Number(itineraryTotal) +
             Number(accommodationTotal) +
+            Number(activityCostTotal) +
             Number(mealTotal) -
             Number(visaAmount);
 
-          // markup: percentage applied on the computed mainTotal
+          // markup: percentage applied on mainTotal
           const markupPercent = Number(qd?.totals?.markupPercent || 0);
           const markupAmount = Number(((mainTotal * markupPercent) / 100) || 0);
-          const grandTotal = Number(mainTotal) + Number(markupAmount);
+
+          // grandTotal: accommodation + activityCostTotal + meal + markupAmount - visa
+          const grandTotal = Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) + Number(markupAmount) - Number(visaAmount);
 
           // price per person: divide grandTotal by PAX
           const pax = Number(qd?.basic?.pax || 1);
           const pricePerPerson = Number((grandTotal / pax) || 0);
-
-          // activity cost total: multiply itineraryTotal by fixed INR multiplier (238)
-          const ACTIVITY_MULTIPLIER = 238;
-          const activityCostTotal = Number((itineraryTotal * ACTIVITY_MULTIPLIER) || 0);
 
           return {
             mainTotal,
