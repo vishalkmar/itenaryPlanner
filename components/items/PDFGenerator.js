@@ -133,7 +133,7 @@ function generatePDFHTML(quote) {
   ];
 
   const inclusionsList = inclusionsWithMeals
-    .map((inc) => `<div style="margin:4px 0; font-size:11px;">• ${inc}</div>`)
+    .map((inc) => `<div style="Margin:4px 0; font-size:11px;">• ${inc}</div>`)
     .join("");
 
   // HTML template
@@ -327,11 +327,14 @@ function generatePDFHTML(quote) {
         <!-- Header -->
         <div class="header">
           <div class="header-left">
-            <div class="logo">TRAVEON</div>
+            <div class="logo">
+                <!-- Use the public folder image: /logo.png -->
+                <img src="/logo.png" alt="Company Logo" style="height:28px; object-fit:contain;" />
+            </div>
           </div>
           <div class="header-right">
-            <div class="title">BOOKING CONFIRMATION</div>
-            <div class="subtitle">Please present either an electronic or paper copy of your booking confirmation upon check-in.</div>
+            <div class="title">Detailed Itinerary</div>
+            <div class="subtitle">${formatDate(basic.startDate)} - ${formatDate(basic.endDate)} ${basic.nights || 0} ${basic.pax || 0}</div>
           </div>
         </div>
 

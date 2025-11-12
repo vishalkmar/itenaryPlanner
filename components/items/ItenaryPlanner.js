@@ -5,7 +5,6 @@ import Select from "react-select";
 import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import useQuoteStore from "./ItenaryStore";
 
-
 // ✅ Activity sets per group
 const activitySets = {
   oneToSix: [
@@ -25,15 +24,15 @@ const activitySets = {
     { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 170, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
-     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 170, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
-       
-  { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
-  { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
-  
-  { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
-  { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 170, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
 
-   { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
+    { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
+    { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
+
+    { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
+    { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+
+    { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
 
   ],
   sixToTen: [
@@ -53,18 +52,18 @@ const activitySets = {
     { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 330, description: "Day1\nPick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp\nDay2\nBallon Tour (8:30 morning)\nWadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
-        
-  { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
-  { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
-  
-  { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
-  { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
 
-   { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
+    { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
+    { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
+
+    { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
+    { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+
+    { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
   ],
 
   tenToFifteen: [
-     { label: "Nizwa & Jabal Al Akhdar", value: "Nizwa & Jabal Al Akhdar", price: 130 },
+    { label: "Nizwa & Jabal Al Akhdar", value: "Nizwa & Jabal Al Akhdar", price: 130 },
     { label: "Jabal Shams & MisFat Al Abrigyeen", value: "Jabal Shams & MisFat Al Abrigyeen", price: 130 },
     { label: "The Coast Trip: Wadi Shah,Bimmah Sinkhole and Fins Beach", value: "The Coast Trip: Wadi Shah,Bimmah Sinkhole and Fins Beach", price: 130 },
     { label: "Desert & Wadi Bani Khalid", value: "Desert & Wadi Bani Khalid", price: 130 },
@@ -79,18 +78,23 @@ const activitySets = {
     { label: "Dimaniyat Island (Without Transfer)", value: "Dimaniyat Island (Without Transfer)", price: 35 },
     { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
-  { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 330, description: "Day1\nPick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp\nDay2\nBallon Tour (8:30 morning)\nWadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
-        
-  { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
-  { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
-  
-  { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
-  { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 330, description: "Day1\nPick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp\nDay2\nBallon Tour (8:30 morning)\nWadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
 
-   { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
+    { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
+    { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
 
-],
+    { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
+    { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+
+    { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
+
+  ],
 };
+
+// which activities should show a qty box
+const shouldShowQtyBox = (value) =>
+  typeof value === "string" &&
+  (value.toLowerCase().includes("dimaniyat") || value.toLowerCase().includes("dolphin"));
 
 export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { }, syncWithStore = false, showNav = true }) {
 
@@ -186,19 +190,33 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
     setDays(days.filter((d) => d.id !== id));
   };
 
+  // selectedOptions: array of option objects returned by react-select
+  // we preserve qty if previously present for that activity in the same day
   const handleActivityChange = (selectedOptions, dayId) => {
-    const selectedActivities = selectedOptions
-      ? selectedOptions.map((opt) => ({
-          label: opt.label,
-          value: opt.value,
-          price: opt.price,
-          description: opt.description || null,
-        }))
-      : [];
-
     setDays((prev) =>
       prev.map((day) => {
         if (day.id !== dayId) return day;
+
+        const prevActs = day.activities || [];
+
+        const selectedActivities = selectedOptions
+          ? selectedOptions.map((opt) => {
+              // preserve previous qty if activity was already selected
+              const prevAct = prevActs.find((p) => p.value === opt.value);
+              const qty = prevAct?.qty ?? 1;
+              const basePrice = opt.price ?? opt.basePrice ?? 0;
+              const price = basePrice * qty;
+
+              return {
+                label: opt.label,
+                value: opt.value,
+                basePrice,
+                qty,
+                price,
+                description: opt.description || null,
+              };
+            })
+          : [];
 
         // build new description by appending any activity descriptions that
         // aren't already present in the day's description
@@ -216,12 +234,30 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
     );
   };
 
+  // change qty for a specific activity in a day and update its price immediately
+  const handleQtyChange = (dayId, activityValue, qtyRaw) => {
+    const qty = Math.max(1, Math.floor(Number(qtyRaw) || 0)); // ensure integer >=1
+    setDays((prev) =>
+      prev.map((day) => {
+        if (day.id !== dayId) return day;
+        const activities = (day.activities || []).map((act) => {
+          if (act.value !== activityValue) return act;
+          const base = act.basePrice ?? act.price ?? 0;
+          return { ...act, qty, price: base * qty };
+        });
+        return { ...day, activities };
+      })
+    );
+  };
+
   const handleAddNewActivity = () => {
     if (!newActivityName || !newActivityPrice) return;
+    const price = parseFloat(newActivityPrice);
     const newAct = {
       label: newActivityName,
       value: newActivityName,
-      price: parseFloat(newActivityPrice),
+      price,
+      basePrice: price,
     };
     setActivityOptions([...activityOptions, newAct]);
     setNewActivityName("");
@@ -251,8 +287,8 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
             key={tab.key}
             onClick={() => handleCategoryChange(tab.key)}
             className={`px-4 py-2 rounded-lg font-semibold ${selectedCategory === tab.key
-                ? "bg-white/40 text-black"
-                : "bg-white/10 hover:bg-white/20"
+              ? "bg-white/40 text-black"
+              : "bg-white/10 hover:bg-white/20"
               }`}
           >
             {tab.label}
@@ -308,7 +344,7 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
                 value={day.activities.map((a) => ({
                   label: a.label,
                   value: a.value,
-                  price: a.price,
+                  price: a.basePrice ?? a.price,
                 }))}
                 onChange={(selected) => handleActivityChange(selected, day.id)}
                 getOptionLabel={(e) => `${e.label} (INR ${e.price})`}
@@ -355,14 +391,33 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
 
               {/* Selected Activities */}
               {day.activities.length > 0 && (
-                <ul className="mt-2 space-y-1">
+                <ul className="mt-2 space-y-2">
                   {day.activities.map((a, i) => (
                     <li
                       key={i}
-                      className="flex justify-between bg-white/10 px-3 py-2 rounded-lg text-sm"
+                      className="flex flex-col md:flex-row md:items-center md:justify-between bg-white/10 px-3 py-2 rounded-lg text-sm gap-2"
                     >
-                      <span>{a.label}</span>
-                      <span>OMR {a.price}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">{a.label}</span>
+                        {/* If this activity supports qty, show small hint of unit price */}
+                        {shouldShowQtyBox(a.value) && (
+                          <span className="text-xs text-white/70">(@ OMR {a.basePrice ?? a.price} per)</span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {/* qty input for specific activities (Dimaniyat / Dolphin) */}
+                        {shouldShowQtyBox(a.value) && (
+                          <input
+                            type="number"
+                            min={1}
+                            value={a.qty ?? 1}
+                            onChange={(e) => handleQtyChange(day.id, a.value, e.target.value)}
+                            className="w-20 bg-white/10 text-white p-1 rounded-lg text-center"
+                          />
+                        )}
+                        <span className="font-semibold">OMR {Number(a.price || 0).toFixed(2)}</span>
+                      </div>
                     </li>
                   ))}
                 </ul>
