@@ -54,30 +54,35 @@ function generatePDFHTML(quote) {
     return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
   };
 
-  // Day-wise itinerary blocks - compact, each day as a small block
-  const dayBlocks = days
-    .map((day) => {
-      let content = day.description || "";
-      if (day.activities && day.activities.length > 0) {
-        const activityLines = day.activities.map((a) => a.label || a.value).join("\n");
-        content = content ? `${content}\n${activityLines}` : activityLines;
-      }
-      const contentHtml = (content || "—").replace(/\n/g, "<br/>");
-      return `
-      <div class="day-item" style="margin-bottom:8px;">
-        <div style="font-weight:bold; font-size:11px; background:#f5f5f5; padding:6px; display:inline-block; min-width:70px;">${day.title || "Day"}</div>
-        <div style="display:inline-block; vertical-align:top; margin-left:8px; font-size:11px; max-width:78%;">${contentHtml}</div>
-      </div>
+  // Day-wise itinerary blocks - TABLE version
+  const dayTableRows = days.length > 0
+    ? days.map((day) => {
+        const content = day.description || "—";
+        const contentHtml = content.replace(/\n/g, "<br/>");
+        return `
+          <tr>
+            <td style="font-weight:bold; font-size:12px; background:#f4f8fd; padding:8px; border:1px solid #cce; min-width:70px;">
+              ${day.title || "Day"}
+            </td>
+            <td style="font-size:12px; color:#222; background:#fafbfe; border:1px solid #cce; padding:8px;">
+              ${contentHtml}
+            </td>
+          </tr>
+        `;
+      }).join("")
+    : `
+      <tr>
+        <td colspan="2" style="text-align:center; padding:16px; font-size:12px; color: #999;">
+          No itinerary days added
+        </td>
+      </tr>
     `;
-    })
-    .join("");
 
   // Hotel details - loop through all accommodations with pricing
   const hotelBlocks = accommodations
     .map((accommodation, idx) => {
       return `
     <div style="margin-bottom:12px; padding:10px; border:1px solid #ccc; background:#f9f9f9;">
-    
       <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:11px; line-height:1.6;">
         <div style="flex:1; min-width:150px;">
           <div style="min-width:100px; font-weight:bold;">Hotel Name:</div>
@@ -106,7 +111,6 @@ function generatePDFHTML(quote) {
           <div style="color:#555;">${accommodation.nights || 0}</div>
         </div>
       </div>
-     
     </div>
     `;
     })
@@ -114,19 +118,16 @@ function generatePDFHTML(quote) {
 
   const hotelSimple = hotelBlocks || `<div style="font-size:11px; padding:10px; color:#666;">No hotels added</div>`;
 
-  // Meals list for inclusions (show non-breakfast meals)
   const mealsList = (meal.meals || [])
     .filter((m) => m.type && m.type.toLowerCase() !== "breakfast")
     .map((m) => `${m.type}`)
     .join(", ");
 
-  // Show Lunch/Dinner specifically (if present) in a dedicated meals section
   const mealsLunchDinner = (meal.meals || [])
     .filter((m) => m.type && ["lunch", "dinner"].includes(m.type.toLowerCase()))
     .map((m) => m.type)
     .join(", ");
 
-  // Inclusions with meals (breakfast always listed in inclusions if present)
   const inclusionsWithMeals = [
     ...(inclusion.inclusions || []),
     ...(mealsList ? [`Meals: ${mealsList}`] : []),
@@ -145,11 +146,7 @@ function generatePDFHTML(quote) {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Booking Confirmation</title>
       <style>
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           color: #333;
@@ -157,169 +154,38 @@ function generatePDFHTML(quote) {
           font-size: 12px;
           line-height: 1.5;
         }
-        .container {
-          padding: 20px;
-          background: white;
-          min-height: 100vh;
-          border: 2px solid #000; /* outer black border as requested */
-        }
-        .header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 20px;
-          border-bottom: 3px solid #0066cc;
-          padding-bottom: 15px;
-        }
-        .header-left {
-          flex: 1;
-        }
-        .logo {
-          font-size: 24px;
-          font-weight: bold;
-          color: #0066cc;
-          margin-bottom: 5px;
-        }
-        .header-right {
-          text-align: right;
-          flex: 1;
-        }
-        .title {
-          font-size: 18px;
-          font-weight: bold;
-          color: #333;
-          margin-bottom: 3px;
-        }
-        .subtitle {
-          font-size: 10px;
-          color: #666;
-          line-height: 1.3;
-        }
-        .section {
-          margin-bottom: 15px;
-          background: white;
-          page-break-inside: avoid;
-        }
-        .section-header {
-          background: #f0f4f8;
-          border-left: 4px solid #0066cc;
-          padding: 10px 12px;
-          margin-bottom: 10px;
-          font-weight: bold;
-          font-size: 13px;
-          color: #0066cc;
-        }
-        .section-content {
-          padding: 0 10px;
-        }
-        .info-grid {
-          display: flex;
-          gap: 16px;
-          flex-wrap: wrap;
-          margin-bottom: 10px;
-        }
-        .info-item {
-          flex: 1;
-          min-width: 140px;
-        }
-        .info-label {
-          font-weight: bold;
-          font-size: 11px;
-          color: #666;
-          margin-bottom: 3px;
-        }
-        .info-value {
-          color: #333;
-          font-size: 11px;
-        }
-        .hotel-card {
-          margin-bottom: 12px;
-          padding: 12px;
-          border: 1px solid #ddd;
-          background: #fafafa;
-          border-radius: 4px;
-        }
-        .hotel-number {
-          font-weight: bold;
-          font-size: 12px;
-          color: #0066cc;
-          margin-bottom: 8px;
-        }
-        .day-block {
-          margin-bottom: 10px;
-          padding: 8px;
-          background: #f9f9f9;
-          border-left: 3px solid #0066cc;
-        }
-        .day-title {
-          font-weight: bold;
-          font-size: 11px;
-          color: #0066cc;
-          margin-bottom: 4px;
-        }
-        .day-content {
-          font-size: 10px;
-          color: #555;
-          line-height: 1.4;
-        }
-        .special-offers {
-          margin-bottom: 15px;
-          background: white;
-        }
-        .offer-section {
-          margin-bottom: 12px;
-          padding-bottom: 12px;
-          border-bottom: 1px solid #eee;
-        }
-        .offer-section:last-child {
-          border-bottom: none;
-          margin-bottom: 0;
-          padding-bottom: 0;
-        }
-        .offer-title {
-          font-weight: bold;
-          font-size: 12px;
-          color: #0066cc;
-          margin-bottom: 6px;
-        }
-        .offer-content {
-          font-size: 10px;
-          color: #555;
-          line-height: 1.5;
-        }
-        .offer-item {
-          margin: 3px 0 3px 12px;
-        }
-        .total-box {
-          background: #e8f2ff;
-          border: 2px solid #0066cc;
-          padding: 15px;
-          text-align: right;
-          margin: 15px 0;
-          border-radius: 4px;
-        }
-        .total-label {
-          font-size: 12px;
-          color: #666;
-          margin-bottom: 5px;
-        }
-        .total-value {
-          color: #0066cc;
-          font-size: 20px;
-          font-weight: bold;
-        }
-        .footer {
-          text-align: center;
-          margin-top: 20px;
-          padding-top: 15px;
-          border-top: 1px solid #ddd;
-          font-size: 10px;
-          color: #666;
-          line-height: 1.6;
-        }
-        .company-info {
-          margin-bottom: 10px;
-        }
+        .container { padding: 20px; background: white; min-height: 100vh; border: 2px solid #000; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 3px solid #0066cc; padding-bottom: 15px; }
+        .header-left { flex: 1; }
+        .logo { font-size: 24px; font-weight: bold; color: #0066cc; margin-bottom: 5px; }
+        .header-right { text-align: right; flex: 1; }
+        .title { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 3px; }
+        .subtitle { font-size: 10px; color: #666; line-height: 1.3; }
+        .section { margin-bottom: 15px; background: white; page-break-inside: avoid; }
+        .section-header { background: #f0f4f8; border-left: 4px solid #0066cc; padding: 10px 12px; margin-bottom: 10px; font-weight: bold; font-size: 13px; color: #0066cc; }
+        .section-content { padding: 0 10px; }
+        .info-grid { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+        .info-item { flex: 1; min-width: 140px; }
+        .info-label { font-weight: bold; font-size: 11px; color: #666; margin-bottom: 3px; }
+        .info-value { color: #333; font-size: 11px; }
+        .hotel-card { margin-bottom: 12px; padding: 12px; border: 1px solid #ddd; background: #fafafa; border-radius: 4px; }
+        .hotel-number { font-weight: bold; font-size: 12px; color: #0066cc; margin-bottom: 8px; }
+        .special-offers { margin-bottom: 15px; background: white; }
+        .offer-section { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+        .offer-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .offer-title { font-weight: bold; font-size: 12px; color: #0066cc; margin-bottom: 6px; }
+        .offer-content { font-size: 10px; color: #555; line-height: 1.5; }
+        .offer-item { margin: 3px 0 3px 12px; }
+        .total-box { background: #e8f2ff; border: 2px solid #0066cc; padding: 15px; text-align: right; margin: 15px 0; border-radius: 4px; }
+        .total-label { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .total-value { color: #0066cc; font-size: 20px; font-weight: bold; }
+        .footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 10px; color: #666; line-height: 1.6; }
+        .company-info { margin-bottom: 10px; }
+        /* Table styles for itinerary */
+        .day-table { width: 100%; border-collapse: collapse; font-size:12px; }
+        .day-table th, .day-table td { border: 1px solid #0066cc; padding: 8px; background: #fafbfe; vertical-align: top; }
+        .day-table th { background: #f4f8fd; font-weight: bold; color: #0066cc; }
+        .day-table td.day-title-col { background: #f0f4f8; font-weight: bold; color: #333; min-width:100px; }
       </style>
     </head>
     <body>
@@ -328,7 +194,6 @@ function generatePDFHTML(quote) {
         <div class="header">
           <div class="header-left">
             <div class="logo">
-                <!-- Use the public folder image: /logo.png -->
                 <img src="/logo.png" alt="Company Logo" style="height:28px; object-fit:contain;" />
             </div>
           </div>
@@ -375,7 +240,17 @@ function generatePDFHTML(quote) {
         <div class="section">
           <div class="section-header">DAILY ITINERARY</div>
           <div class="section-content">
-            ${dayBlocks}
+            <table class="day-table">
+              <thead>
+                <tr>
+                  <th style="width:20%">Day</th>
+                  <th style="width:80%">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${dayTableRows}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -384,15 +259,12 @@ function generatePDFHTML(quote) {
           <div class="section-header">PACKAGE DETAILS</div>
           <div class="section-content">
             <div class="special-offers">
-              <!-- Inclusions -->
               <div class="offer-section">
                 <div class="offer-title">INCLUSIONS</div>
                 <div class="offer-content">
                   ${inclusionsList || "<div class='offer-item'>No inclusions specified</div>"}
                 </div>
               </div>
-
-              <!-- Exclusions -->
               <div class="offer-section">
                 <div class="offer-title">EXCLUSIONS</div>
                 <div class="offer-content">
@@ -407,7 +279,6 @@ function generatePDFHTML(quote) {
           </div>
         </div>
 
-        <!-- Meals (only show if Lunch/Dinner present) -->
         ${mealsLunchDinner ? `
         <div class="section">
           <div class="section-header">MEALS</div>
@@ -422,7 +293,6 @@ function generatePDFHTML(quote) {
         </div>
         ` : ""}
 
-        <!-- Price Summary -->
         <div class="section">
           <div class="total-box">
             <div class="total-label">PRICE PER PERSON</div>
@@ -430,7 +300,6 @@ function generatePDFHTML(quote) {
           </div>
         </div>
 
-        <!-- Booking Information -->
         <div class="section">
           <div class="section-header">BOOKING INFORMATION</div>
           <div class="section-content">
@@ -445,7 +314,6 @@ function generatePDFHTML(quote) {
           </div>
         </div>
 
-        <!-- Terms & Conditions -->
         <div class="section">
           <div class="section-header">IMPORTANT TERMS & CONDITIONS</div>
           <div class="section-content" style="font-size:10px; line-height:1.5; color:#555;">
@@ -457,7 +325,6 @@ function generatePDFHTML(quote) {
           </div>
         </div>
 
-        <!-- Footer -->
         <div class="footer">
           <div style="font-weight:bold; margin-bottom:5px;">CUSTOMER SERVICE</div>
           <div>Call us 24/7: +91 9540111207, +91 9540111307</div>

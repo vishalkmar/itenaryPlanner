@@ -1,11 +1,19 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, Plus, ChevronDown, ChevronUp, X } from "lucide-react";
 import useQuoteStore from "./ItenaryStore";
 
-// ✅ Activity sets per group
+// SHOULD SHOW QTY BOX FUNCTION: FIXED!
+const shouldShowQtyBox = (value) =>
+  typeof value === "string" &&
+  (value.toLowerCase().includes("dimaniyat") ||
+   value.toLowerCase().includes("dolphin") ||
+   value.toLowerCase().includes("dhow"));
+
+// ---------- Original Activity Sets (unchanged) ----------
 const activitySets = {
   oneToSix: [
     { label: "Nizwa & Jabal Al Akhdar", value: "Nizwa & Jabal Al Akhdar", price: 130 },
@@ -25,81 +33,37 @@ const activitySets = {
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
-
     { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
     { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
-
     { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
     { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
-
-    { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
-
-  ],
-  sixToTen: [
-    { label: "Nizwa & Jabal Al Akhdar", value: "Nizwa & Jabal Al Akhdar", price: 130 },
-    { label: "Jabal Shams & MisFat Al Abrigyeen", value: "Jabal Shams & MisFat Al Abrigyeen", price: 130 },
-    { label: "The Coast Trip: Wadi Shah,Bimmah Sinkhole and Fins Beach", value: "The Coast Trip: Wadi Shah,Bimmah Sinkhole and Fins Beach", price: 130 },
-    { label: "Desert & Wadi Bani Khalid", value: "Desert & Wadi Bani Khalid", price: 130 },
-    { label: "Nakhal & AL Rustaq", value: "Nakhal & AL Rustaq", price: 130 },
-    { label: "Full day Nizwa Tour - Nizwa Fort , Nizwa Souq", value: "Full day Nizwa Tour - Nizwa Fort , Nizwa Souq", price: 130 },
-    { label: "Half day Muscat City Tour - Qurum Beach, Opera House from outside,Mutra Souq, Mutrah Fort", value: "Half day Muscat City Tour - Qurum Beach, Opera House from outside,Mutra Souq, Mutrah Fort", price: 65 },
-    { label: "Dimaniyat Island & Snorkeling (with Transfer)", value: "Dimaniyat Island & Snorkeling (with Transfer)", price: 46 },
-    { label: "Full Day East Salalah - Takah, Wadi Darbat, Samhram Ancient History", value: "Full Day East Salalah - Takah, Wadi Darbat, Samhram Ancient History", price: 130 },
-    { label: "Full Day West Salalah- Almugshail Beach, Mountain , Alfazaih Beach", value: "Full day West Salalah- Almugshail Beach, Mountain , Alfazaih Beach", price: 130 },
-    { label: "Half Day Salalah City Tour- coconut & banana Farms, Sultan Qaboos Mousq, Albalid", value: "Half Day Salalah City Tour- coconut & banana Farms, Sultan Qaboos Mousq, Albalid", price: 65 },
-    { label: "Dhow Cruise With Sunset", value: "Dhow Cruise With Sunset", price: 25 },
-    { label: "Dimaniyat Island (Without Transfer)", value: "Dimaniyat Island (Without Transfer)", price: 35 },
-    { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
-    { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
-     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
-    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
-
-    { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
-    { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
-
-    { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
-    { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
-
     { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
   ],
-
-  tenToFifteen: [
-    { label: "Nizwa & Jabal Al Akhdar", value: "Nizwa & Jabal Al Akhdar", price: 130 },
-    { label: "Jabal Shams & MisFat Al Abrigyeen", value: "Jabal Shams & MisFat Al Abrigyeen", price: 130 },
-    { label: "The Coast Trip: Wadi Shah,Bimmah Sinkhole and Fins Beach", value: "The Coast Trip: Wadi Shah,Bimmah Sinkhole and Fins Beach", price: 130 },
-    { label: "Desert & Wadi Bani Khalid", value: "Desert & Wadi Bani Khalid", price: 130 },
-    { label: "Nakhal & AL Rustaq", value: "Nakhal & AL Rustaq", price: 130 },
-    { label: "Full day Nizwa Tour - Nizwa Fort , Nizwa Souq", value: "Full day Nizwa Tour - Nizwa Fort , Nizwa Souq", price: 130 },
-    { label: "Half day Muscat City Tour - Qurum Beach, Opera House from outside,Mutra Souq, Mutrah Fort", value: "Half day Muscat City Tour - Qurum Beach, Opera House from outside,Mutra Souq, Mutrah Fort", price: 65 },
-    { label: "Dimaniyat Island & Snorkeling (with Transfer)", value: "Dimaniyat Island & Snorkeling (with Transfer)", price: 46 },
-    { label: "Full Day East Salalah - Takah, Wadi Darbat, Samhram Ancient History", value: "Full Day East Salalah - Takah, Wadi Darbat, Samhram Ancient History", price: 130 },
-    { label: "Full Day West Salalah- Almugshail Beach, Mountain , Alfazaih Beach", value: "Full day West Salalah- Almugshail Beach, Mountain , Alfazaih Beach", price: 130 },
-    { label: "Half Day Salalah City Tour- coconut & banana Farms, Sultan Qaboos Mousq, Albalid", value: "Half Day Salalah City Tour- coconut & banana Farms, Sultan Qaboos Mousq, Albalid", price: 65 },
-    { label: "Dhow Cruise With Sunset", value: "Dhow Cruise With Sunset", price: 25 },
-    { label: "Dimaniyat Island (Without Transfer)", value: "Dimaniyat Island (Without Transfer)", price: 35 },
-    { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
-    { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
-      { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
-    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
-
-    { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
-    { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
-
-    { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
-    { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
-
-    { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
-
-  ],
+  sixToTen: [],
+  tenToFifteen: [],
 };
+activitySets.sixToTen = [...activitySets.oneToSix];
+activitySets.tenToFifteen = [...activitySets.oneToSix];
 
-// which activities should show a qty box
-const shouldShowQtyBox = (value) =>
-  typeof value === "string" &&
-  (value.toLowerCase().includes("dimaniyat") || value.toLowerCase().includes("dolphin") ||   value.toLowerCase().includes("dhow"));
 
-export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { }, syncWithStore = false, showNav = true }) {
+// ---------- Description Select Options ----------
+const descriptionOptions = [
+  { value: "Other", label: "Other (Custom)" },
+  { value: "Transfer from Muscat Airport to Muscat Hotel", label: "Transfer From Muscat Airport to Muscat Hotel" },
+   { value: "Check-in to Hotel", label: "Check-in to Hotel" },
+    { value: "Relex at Hotel", label: "Relex at Hotel" },
+     { value: "Breakfast at Hotel", label: "Breakfast at Hotel" },
+      { value: "Return to Hotel and overnight stay", label: "Return to Hotel and overnight stay" },
+      { value: "Drop back to hotel and overnight stay", label: "Drop back to hotel and overnight stay" },
+      { value: "Check-Out From Hotel", label: "Check-Out From Hotel" },
+      { value: "Transfer from Hotel to Airport", label: "Transfer from Hotel to Airport" },
+        { value: "Check-in to hotel (Best Western Premier Muscat)", label: "Check-in to hotel (Best Western Premier Muscat)" },
+      { value: "leisure", label: "leisure" },
+  ...activitySets.oneToSix.map(act => ({ value: act.label, label: act.label })),
+  
+];
 
+export default function ItineraryPlanner({ onNext = () => {}, onBack = () => {}, syncWithStore = false, showNav = true }) {
   const { updateStepData, quoteData } = useQuoteStore();
 
   const [selectedCategory, setSelectedCategory] = useState(() =>
@@ -107,39 +71,29 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
   );
   const [activityOptions, setActivityOptions] = useState(activitySets.oneToSix);
 
+  // --- Days
   const [days, setDays] = useState(() =>
     quoteData?.itinerary?.days && Array.isArray(quoteData.itinerary.days) && quoteData.itinerary.days.length
-      ? quoteData.itinerary.days
-      : [{ id: 1, title: "Day 1", description: "", activities: [], open: true }]
+      ? quoteData.itinerary.days.map(day => ({
+          ...day,
+          descriptionList: day.descriptionList || [],
+          showOtherInput: false,
+          otherText: ""
+        }))
+      : [{
+          id: 1,
+          title: "Day 1",
+          description: "",
+          descriptionList: [],
+          showOtherInput: false,
+          otherText: "",
+          activities: [],
+          open: true
+        }]
   );
   const [totalActivityPrice, setTotalActivityPrice] = useState(0);
   const [newActivityName, setNewActivityName] = useState("");
   const [newActivityPrice, setNewActivityPrice] = useState("");
-
-  // Load full itinerary data when in edit mode
-  useEffect(() => {
-    if (quoteData?.itinerary) {
-      const incomingDays = Array.isArray(quoteData.itinerary.days) ? quoteData.itinerary.days : null;
-      const incomingCategory = quoteData.itinerary.selectedCategory;
-
-      // avoid unnecessary state updates (prevents infinite loops when store updates echo back)
-      try {
-        if (incomingDays) {
-          const sameDays = JSON.stringify(incomingDays) === JSON.stringify(days);
-          if (!sameDays) setDays(incomingDays);
-        }
-      } catch (e) {
-        // fallback: if stringify fails, set directly
-        if (incomingDays) setDays(incomingDays);
-      }
-
-      if (incomingCategory && incomingCategory !== selectedCategory) {
-        setSelectedCategory(incomingCategory);
-        setActivityOptions(activitySets[incomingCategory] || activitySets.oneToSix);
-      }
-    }
-    // only run when quoteData changes
-  }, [quoteData]);
 
   useEffect(() => {
     const total = days.reduce(
@@ -150,14 +104,13 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
     setTotalActivityPrice(total);
   }, [days]);
 
-  // when in edit mode, push itinerary to store
   useEffect(() => {
     if (syncWithStore) {
       updateStepData("itinerary", { selectedCategory, days, totalActivityPrice });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, days, totalActivityPrice, syncWithStore]);
 
+  // --- Accordion tabs ---
   const handleCategoryChange = (key) => {
     setSelectedCategory(key);
     setActivityOptions(activitySets[key]);
@@ -165,7 +118,19 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
       prev.map((d) => ({
         ...d,
         activities: [],
+        descriptionList: [],
+        showOtherInput: false,
+        otherText: ""
       }))
+    );
+  };
+
+  // Accordion
+  const toggleDayOpen = (id) => {
+    setDays((prev) =>
+      prev.map((day) =>
+        day.id === id ? { ...day, open: !day.open } : { ...day, open: false }
+      )
     );
   };
 
@@ -176,69 +141,114 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
         id: days.length + 1,
         title: `Day ${days.length + 1}`,
         description: "",
+        descriptionList: [],
+        showOtherInput: false,
+        otherText: "",
         activities: [],
-        open: true,
+        open: true
       },
     ]);
-  };
-
-  const handleSaveDescription = (id, desc) => {
-    setDays((prev) =>
-      prev.map((day) => (day.id === id ? { ...day, description: desc } : day))
-    );
   };
 
   const handleRemoveDay = (id) => {
     setDays(days.filter((d) => d.id !== id));
   };
 
-  // selectedOptions: array of option objects returned by react-select
-  // we preserve qty if previously present for that activity in the same day
-  const handleActivityChange = (selectedOptions, dayId) => {
-    setDays((prev) =>
-      prev.map((day) => {
+  // --- NEW LOGIC: Description SELECT instead of textarea ---
+  const handleDescriptionSelect = (selectedOption, dayId) => {
+    if (!selectedOption) return;
+    setDays(prev =>
+      prev.map(day => {
         if (day.id !== dayId) return day;
-
-        const prevActs = day.activities || [];
-
-        const selectedActivities = selectedOptions
-          ? selectedOptions.map((opt) => {
-              // preserve previous qty if activity was already selected
-              const prevAct = prevActs.find((p) => p.value === opt.value);
-              const qty = prevAct?.qty ?? 1;
-              const basePrice = opt.price ?? opt.basePrice ?? 0;
-              const price = basePrice * qty;
-
-              return {
-                label: opt.label,
-                value: opt.value,
-                basePrice,
-                qty,
-                price,
-                description: opt.description || null,
-              };
-            })
-          : [];
-
-        // build new description by appending any activity descriptions that
-        // aren't already present in the day's description
-        let newDesc = day.description || "";
-        for (const act of selectedActivities) {
-          if (act.description) {
-            if (!newDesc.includes(act.description)) {
-              newDesc = newDesc.trim() ? newDesc + "\n" + act.description : act.description;
-            }
-          }
+        // Other input opens
+        if (selectedOption.value === "Other") {
+          return { ...day, showOtherInput: true };
         }
-
-        return { ...day, activities: selectedActivities, description: newDesc };
+        if (day.descriptionList.includes(selectedOption.value)) return day;
+        const updatedList = [...day.descriptionList, selectedOption.value];
+        return {
+          ...day,
+          descriptionList: updatedList,
+          description: updatedList.join("\n"),
+          showOtherInput: false
+        };
       })
     );
   };
 
-  // change qty for a specific activity in a day and update its price immediately
+  // Remove single desc item
+  const handleRemoveDesc = (valToRemove, dayId) => {
+    setDays(prev =>
+      prev.map(day => {
+        if (day.id !== dayId) return day;
+        const updated = day.descriptionList.filter(val => val !== valToRemove);
+        return {
+          ...day,
+          descriptionList: updated,
+          description: updated.join("\n")
+        };
+      })
+    );
+  };
+
+  const handleOtherInput = (dayId, value) => {
+    setDays(prev =>
+      prev.map(day =>
+        day.id === dayId ? { ...day, otherText: value } : day
+      )
+    );
+  };
+
+  const handleAddOtherDesc = (dayId) => {
+    setDays(prev =>
+      prev.map(day => {
+        if (day.id !== dayId) return day;
+        if (!day.otherText.trim()) return day;
+        if (day.descriptionList.includes(day.otherText.trim())) return {
+          ...day, otherText: ""
+        };
+        const updatedList = [...day.descriptionList, day.otherText.trim()];
+        return {
+          ...day,
+          descriptionList: updatedList,
+          description: updatedList.join("\n"),
+          showOtherInput: false,
+          otherText: ""
+        };
+      })
+    );
+  };
+
+  // ----- Unchanged activities logic below -----
+  const handleActivityChange = (selectedOptions, dayId) => {
+    setDays((prev) =>
+      prev.map((day) => {
+        if (day.id !== dayId) return day;
+        const prevActs = day.activities || [];
+        const selectedActivities = selectedOptions
+          ? selectedOptions.map((opt) => {
+            const prevAct = prevActs.find((p) => p.value === opt.value);
+            const qty = prevAct?.qty ?? 1;
+            const basePrice = opt.price ?? opt.basePrice ?? 0;
+            const price = basePrice * qty;
+
+            return {
+              label: opt.label,
+              value: opt.value,
+              basePrice,
+              qty,
+              price,
+              description: opt.description || null,
+            };
+          })
+          : [];
+        return { ...day, activities: selectedActivities };
+      })
+    );
+  };
+
   const handleQtyChange = (dayId, activityValue, qtyRaw) => {
-    const qty = Math.max(1, Math.floor(Number(qtyRaw) || 0)); // ensure integer >=1
+    const qty = Math.max(1, Math.floor(Number(qtyRaw) || 0));
     setDays((prev) =>
       prev.map((day) => {
         if (day.id !== dayId) return day;
@@ -266,19 +276,11 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
     setNewActivityPrice("");
   };
 
-  const toggleDayOpen = (id) => {
-    setDays((prev) =>
-      prev.map((day) =>
-        day.id === id ? { ...day, open: !day.open } : { ...day, open: false }
-      )
-    );
-  };
-
+  // ------------------- RENDER -------------------
   return (
     <div className="w-full bg-black text-white rounded-2xl p-6 shadow-xl relative z-10">
       <h2 className="text-3xl font-bold mb-6 text-center">Itinerary Planner</h2>
-
-      {/* 🧭 Category Tabs */}
+      {/* Tabs */}
       <div className="flex justify-center mb-6 gap-3 flex-wrap">
         {[
           { key: "oneToSix", label: "1 - 6 People" },
@@ -291,14 +293,13 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
             className={`px-4 py-2 rounded-lg font-semibold ${selectedCategory === tab.key
               ? "bg-white/40 text-black"
               : "bg-white/10 hover:bg-white/20"
-              }`}
+            }`}
           >
             {tab.label}
           </button>
         ))}
       </div>
-
-      {/* Accordion Days */}
+      {/* Days Accordion */}
       {days.map((day) => (
         <div
           key={day.id}
@@ -323,25 +324,68 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
               {day.open ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
           </div>
-
           {/* Body */}
           {day.open && (
             <div className="p-4 bg-black/40 relative z-20">
-              {/* Description */}
-              <textarea
-                className="w-full bg-white/10 text-white placeholder-white/60 rounded-lg p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-white/40"
-                placeholder="Write day description..."
-                value={day.description}
-                onChange={(e) => handleSaveDescription(day.id, e.target.value)}
-              />
-
-              {/* Activities */}
+              {/* NEW: Description Select, not textarea */}
+              <label className="block mb-2 text-sm font-semibold">Description (Select/Add Below)</label>
+              <div className="flex gap-2 items-center mb-2">
+                <select
+                  className="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 flex-1"
+                  value=""
+                  onChange={e => {
+                    const val = e.target.value;
+                    if (!val) return;
+                    const found = descriptionOptions.find(opt => opt.value === val);
+                    handleDescriptionSelect(found, day.id);
+                  }}
+                >
+                  <option value="">-- Add to Description --</option>
+                  {descriptionOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                {day.showOtherInput && (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Other description..."
+                      className="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 flex-1"
+                      value={day.otherText}
+                      onChange={e => handleOtherInput(day.id, e.target.value)}
+                    />
+                    <button
+                      onClick={() => handleAddOtherDesc(day.id)}
+                      className="bg-green-500 text-white px-3 py-2 rounded-lg"
+                    >
+                      Add
+                    </button>
+                  </>
+                )}
+              </div>
+              {/* Display description items like chips/cards with remove */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {day.descriptionList.length === 0 && (
+                  <span className="text-gray-400 text-sm">No description items added.</span>
+                )}
+                {day.descriptionList.map((desc, idx) => (
+                  <div key={idx} className="bg-cyan-700/70 text-white py-1 px-3 rounded flex items-center gap-1">
+                    <span>{desc}</span>
+                    <button
+                      type="button"
+                      className="ml-1 text-red-400 hover:text-red-200"
+                      onClick={() => handleRemoveDesc(desc, day.id)}
+                    ><X size={14}/></button>
+                  </div>
+                ))}
+              </div>
+              {/* Original Activities Logic (multi select, qty, pricing) */}
               <label className="block mb-2 text-sm font-semibold">
                 Select Activities
               </label>
               <Select
                 isMulti
-                menuPortalTarget={typeof window !== "undefined" ? document.body : null} // ✅ safe SSR
+                menuPortalTarget={typeof window !== "undefined" ? document.body : null}
                 options={activityOptions}
                 value={day.activities.map((a) => ({
                   label: a.label,
@@ -355,18 +399,17 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                   menu: (base) => ({
                     ...base,
-                    backgroundColor: "#fff", // white background
-                    color: "#000", // black text inside dropdown
+                    backgroundColor: "#fff",
+                    color: "#000",
                   }),
                   option: (base, state) => ({
                     ...base,
-                    color: "#000", // black text for options
-                    backgroundColor: state.isFocused ? "#e5e7eb" : "#fff", // light gray hover
+                    color: "#000",
+                    backgroundColor: state.isFocused ? "#e5e7eb" : "#fff",
                     cursor: "pointer",
                   }),
                 }}
               />
-
               {/* Add Custom Activity */}
               <div className="flex items-center gap-2 mb-3">
                 <input
@@ -390,7 +433,6 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
                   <Plus size={16} /> Add
                 </button>
               </div>
-
               {/* Selected Activities */}
               {day.activities.length > 0 && (
                 <ul className="mt-2 space-y-2">
@@ -401,14 +443,13 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
                     >
                       <div className="flex items-center gap-3">
                         <span className="font-medium">{a.label}</span>
-                        {/* If this activity supports qty, show small hint of unit price */}
                         {shouldShowQtyBox(a.value) && (
-                          <span className="text-xs text-white/70">(@ OMR {a.basePrice ?? a.price} per)</span>
+                          <span className="text-xs text-white/70">
+                            (@ OMR {a.basePrice ?? a.price} per)
+                          </span>
                         )}
                       </div>
-
                       <div className="flex items-center gap-3">
-                        {/* qty input for specific activities (Dimaniyat / Dolphin) */}
                         {shouldShowQtyBox(a.value) && (
                           <input
                             type="number"
@@ -428,7 +469,6 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
           )}
         </div>
       ))}
-
       {/* ➕ Add More Days */}
       <div className="text-center mb-6">
         <button
@@ -438,17 +478,14 @@ export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { 
           + Add More Day
         </button>
       </div>
-
       {/* 💰 Total (multiplied by INR 238 before persisting) */}
       <div className="text-center text-xl font-bold mb-6">
-        {/* multiplier is fixed as per requirement */}
         {(() => {
           const ACTIVITY_MULTIPLIER = 238;
           const multiplied = Number(totalActivityPrice * ACTIVITY_MULTIPLIER || 0);
           return `Total Activity Cost: INR ${multiplied.toFixed(2)}`;
         })()}
       </div>
-
       {/* Navigation */}
       {showNav && (
         <div className="flex justify-between">
