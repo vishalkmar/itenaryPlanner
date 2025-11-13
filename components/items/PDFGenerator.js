@@ -77,7 +77,7 @@ function generatePDFHTML(quote) {
     .map((accommodation, idx) => {
       return `
     <div style="margin-bottom:12px; padding:10px; border:1px solid #ccc; background:#f9f9f9;">
-      <div style="font-weight:bold; font-size:12px; margin-bottom:8px; color:#333;">Hotel ${idx + 1}</div>
+    
       <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:11px; line-height:1.6;">
         <div style="flex:1; min-width:150px;">
           <div style="min-width:100px; font-weight:bold;">Hotel Name:</div>
@@ -334,7 +334,7 @@ function generatePDFHTML(quote) {
           </div>
           <div class="header-right">
             <div class="title">Detailed Itinerary</div>
-            <div class="subtitle">${formatDate(basic.startDate)} - ${formatDate(basic.endDate)} ${basic.nights || 0} ${basic.pax || 0}</div>
+            <div class="subtitle">${formatDate(basic.startDate)} - ${formatDate(basic.endDate)} ${basic.nights || 0} Nights  ${basic.pax || 0} PAX</div>
           </div>
         </div>
 

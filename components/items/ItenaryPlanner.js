@@ -96,7 +96,7 @@ const activitySets = {
 // which activities should show a qty box
 const shouldShowQtyBox = (value) =>
   typeof value === "string" &&
-  (value.toLowerCase().includes("dimaniyat") || value.toLowerCase().includes("dolphin"));
+  (value.toLowerCase().includes("dimaniyat") || value.toLowerCase().includes("dolphin") ||   value.toLowerCase().includes("dhow"));
 
 export default function ItineraryPlanner({ onNext = () => { }, onBack = () => { }, syncWithStore = false, showNav = true }) {
 
