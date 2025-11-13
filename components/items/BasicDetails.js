@@ -76,7 +76,7 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
           <label className="text-sm text-gray-400">PAX (persons)</label>
           <input
             type="number"
-            min="1"
+            min="0"
             step="1"
             value={pax}
             onChange={(e) => setPax(Number(e.target.value || 1))}
