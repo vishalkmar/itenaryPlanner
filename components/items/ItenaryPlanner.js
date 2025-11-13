@@ -18,7 +18,7 @@ const activitySets = {
   oneToSix: [
     { label: "Nizwa & Jabal Al Akhdar", value: "Nizwa & Jabal Al Akhdar", price: 130 },
     { label: "Jabal Shams & MisFat Al Abrigyeen", value: "Jabal Shams & MisFat Al Abrigyeen", price: 130 },
-    { label: "The Coast Trip: Wadi Shah,Bimmah Sinkhole and Fins Beach", value: "The Coast Trip: Wadi Shah,Bimmah Sinkhole and Fins Beach", price: 130 },
+    { label: "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Widi Tiwi", value: "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Widi Tiwi", price: 130 },
     { label: "Desert & Wadi Bani Khalid", value: "Desert & Wadi Bani Khalid", price: 130 },
     { label: "Nakhal & AL Rustaq", value: "Nakhal & AL Rustaq", price: 130 },
     { label: "Full day Nizwa Tour - Nizwa Fort , Nizwa Souq", value: "Full day Nizwa Tour - Nizwa Fort , Nizwa Souq", price: 130 },
@@ -58,7 +58,7 @@ const descriptionOptions = [
       { value: "Check-Out From Hotel", label: "Check-Out From Hotel" },
       { value: "Transfer from Hotel to Airport", label: "Transfer from Hotel to Airport" },
         { value: "Check-in to hotel (Best Western Premier Muscat)", label: "Check-in to hotel (Best Western Premier Muscat)" },
-      { value: "leisure", label: "leisure" },
+      { value: "leisure Day", label: "leisure Day" },
   ...activitySets.oneToSix.map(act => ({ value: act.label, label: act.label })),
   
 ];

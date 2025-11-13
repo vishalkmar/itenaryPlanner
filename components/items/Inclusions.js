@@ -10,7 +10,7 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
     "All Transfers",
     "Half-day Muscat city tour – Qurum Beach, Opera House (outside), Mutrah Souq, Mutrah Fort",
     "Full-day Nizwa tour – Nizwa Fort, Nizwa Souq",
-    "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Fins Beach",
+    "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Widi Tiwi",
   ];
 
   const { quoteData } = useQuoteStore();
@@ -70,7 +70,7 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
     onNext();
   };
 
-  
+
   const handleDelete = (index) => {
     setInclusions(inclusions.filter((_, i) => i !== index));
   };
