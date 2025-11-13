@@ -400,6 +400,8 @@ const handleAddDay = () => {
                 Select Activities
               </label>
               <Select
+                instanceId={`day-${day.id}-activities`}           // 👈 FIX
+                 inputId={`day-${day.id}-activities-input`}        // (optional but nice)
                 isMulti
                 menuPortalTarget={typeof window !== "undefined" ? document.body : null}
                 options={activityOptions}
