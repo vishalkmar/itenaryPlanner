@@ -134,21 +134,37 @@ export default function ItineraryPlanner({ onNext = () => {}, onBack = () => {},
     );
   };
 
-  const handleAddDay = () => {
-    setDays([
-      ...days.map((d) => ({ ...d, open: false })), // collapse previous
-      {
-        id: days.length + 1,
-        title: `Day ${days.length + 1}`,
-        description: "",
-        descriptionList: [],
-        showOtherInput: false,
-        otherText: "",
-        activities: [],
-        open: true
-      },
-    ]);
-  };
+  // const handleAddDay = () => {
+  //   setDays([
+  //     ...days.map((d) => ({ ...d, open: false })), // collapse previous
+  //     {
+  //       id: days.length + 1,
+  //       title: `Day ${days.length + 1}`,
+  //       description: "",
+  //       descriptionList: [],
+  //       showOtherInput: false,
+  //       otherText: "",
+  //       activities: [],
+  //       open: true
+  //     },
+  //   ]);
+  // };
+
+const handleAddDay = () => {
+  setDays((prevDays) => [
+    ...prevDays.map((d) => ({ ...d, open: false })),
+    {
+      id: prevDays.length + 1,
+      title: `Day ${prevDays.length + 1}`,
+      description: "",
+      descriptionList: [],
+      showOtherInput: false,
+      otherText: "",
+      activities: [],
+      open: true,
+    },
+  ]);
+};
 
   const handleRemoveDay = (id) => {
     setDays(days.filter((d) => d.id !== id));
