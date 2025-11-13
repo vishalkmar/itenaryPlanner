@@ -79,7 +79,7 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
             min="0"
             step="1"
             value={pax}
-            onChange={(e) => setPax(Number(e.target.value || 1))}
+            onChange={(e) => setPax(Number(e.target.value || 0))}
             className="w-full p-2 rounded bg-white/5 text-white"
           />
         </div>
