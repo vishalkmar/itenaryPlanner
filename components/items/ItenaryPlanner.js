@@ -23,8 +23,8 @@ const activitySets = {
     { label: "Dimaniyat Island (Without Transfer)", value: "Dimaniyat Island (Without Transfer)", price: 35 },
     { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
-    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 170, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
-    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 170, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
+    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
+    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
 
     { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
     { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
@@ -51,7 +51,8 @@ const activitySets = {
     { label: "Dimaniyat Island (Without Transfer)", value: "Dimaniyat Island (Without Transfer)", price: 35 },
     { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
-    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 330, description: "Day1\nPick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp\nDay2\nBallon Tour (8:30 morning)\nWadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
+     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
+    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
 
     { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
     { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
@@ -78,7 +79,8 @@ const activitySets = {
     { label: "Dimaniyat Island (Without Transfer)", value: "Dimaniyat Island (Without Transfer)", price: 35 },
     { label: "Dolphin Watching & Snorkeling", value: "Dolphin Watching & Snorkeling", price: 25 },
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
-    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 330, description: "Day1\nPick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp\nDay2\nBallon Tour (8:30 morning)\nWadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
+      { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
+    { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
 
     { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
     { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
