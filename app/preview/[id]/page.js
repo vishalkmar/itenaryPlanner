@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import PDFGenerator from "@/components/items/PDFGenerator";
 
+
 export default function QuotePreviewPage() {
   const router = useRouter();
   const params = useParams();

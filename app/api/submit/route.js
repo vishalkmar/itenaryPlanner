@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/db";
 import Quote from "@/models/Quote";
 import { z } from "zod";
+import { QuoteIcon } from "lucide-react";
 
 // Zod schema: a light validation matching the UI shapes
 const ActivityZ = z.object({ label: z.string().optional(), value: z.string().optional(), price: z.number().optional().default(0) });
@@ -17,7 +18,7 @@ const AccommodationZ = z.object({
   children: z.number().optional().default(0),
   occupancy: z.string().optional(),
   rooms: z.number().optional().default(0),
-  totalPrice: z.number().optional().default(0),
+  totalPrice: z.number().optional().default(),
 });
 
 const MealItemZ = z.object({ type: z.string().optional(), price: z.number().optional().default(0) });
@@ -81,12 +82,20 @@ export async function POST(request) {
     }
     const mealTotal = q?.meal?.totalPrice || 0;
 
-    const visaRaw = Number(q?.inclusion?.visaAmount || 0);
     const hasVisa = Array.isArray(q?.inclusion?.inclusions)
-      ? q.inclusion.inclusions.some((it) => String(it || "").toLowerCase().includes("visa"))
-      : false;
+  ? q.inclusion.inclusions.some((it) => String(it || "").toLowerCase().includes("visa"))
+  : false;
 
-    const visaAmount = hasVisa ? -Math.abs(visaRaw) : visaRaw;
+const paxx = Number(q?.basic?.pax || 1);
+
+// If Visa present: POSITIVE 2000*pax, If NOT: NEGATIVE 1600*pax
+const visaAmount = hasVisa ? 2000 * paxx : -1600 * paxx;
+    // const visaRaw = Number(q?.inclusion?.visaAmount || 0);
+    // const hasVisa = Array.isArray(q?.inclusion?.inclusions)
+    //   ? q.inclusion.inclusions.some((it) => String(it || "").toLowerCase().includes("visa"))
+    //   : false;
+
+    // const visaAmount = hasVisa ? -Math.abs(visaRaw) : visaRaw;
 
     // compute activity cost total: itineraryTotal * 238 (INR multiplier)
     const ACTIVITY_MULTIPLIER = 238;
@@ -107,7 +116,7 @@ export async function POST(request) {
     const pax = Number(q?.basic?.pax || 1);
     const pricePerPerson = Number((grandTotal / pax) || 0);
  
-
+   
     // attach computed totals and normalized inclusion visaAmount
     q.totals = {
       mainTotal,

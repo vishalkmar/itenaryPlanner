@@ -42,31 +42,35 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
   useEffect(() => {
     if (syncWithStore) {
       const hasVisa = inclusions.some((item) => item.toLowerCase().includes("visa"));
-      // if Visa present: 0, if Visa NOT present: 1600 (will be subtracted from total)
-      updateStepData("inclusion", { inclusions, visaAmount: hasVisa ? 0 : 1600 });
+      const pax = Number(quoteData?.basic?.pax || 1);
+
+      // If Visa present: POSITIVE 2000*pax, If NOT: NEGATIVE 1600*pax
+      updateStepData("inclusion", { 
+        inclusions, 
+        visaAmount: hasVisa ? 2000 * pax : -1600 * pax 
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inclusions, syncWithStore]);
+  }, [inclusions, syncWithStore, quoteData?.basic?.pax]);
 
   const handleNext = () => {
-    const hasVisa = inclusions.some((item) =>
-      item.toLowerCase().includes("visa")
-    );
+    const hasVisa = inclusions.some((item) => item.toLowerCase().includes("visa"));
+    const pax = Number(quoteData?.basic?.pax || 1);
 
-    // if Visa present: 0, if Visa NOT present: 1600 (will be subtracted from total)
     updateStepData("inclusion", {
       inclusions,
-      visaAmount: hasVisa ? 0 : 1600,
+      visaAmount: hasVisa ? 2000 * pax : -1600 * pax,
     });
 
     console.log("Updated inclusion data:", {
       inclusions,
-      visaAmount: hasVisa ? 0 : 1600,
+      visaAmount: hasVisa ? 2000 * pax : -1600 * pax,
     });
 
     onNext();
   };
 
+  
   const handleDelete = (index) => {
     setInclusions(inclusions.filter((_, i) => i !== index));
   };
