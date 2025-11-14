@@ -7,6 +7,7 @@ import Exclusion from "./Exclusion";
 import Accommodation from "./Accommodation";
 import Meal from "./Meal";
 import ItineraryPlanner from "./ItenaryPlanner";
+import Markup from "./Markup";
 import FinalConsole from "./FinalConsole";
 
 
@@ -69,6 +70,8 @@ const renderStep = () => {
     case 5:
       return <Exclusion onNext={handleNext} onBack={handleBack} />;
     case 6:
+      return <Markup onNext={handleNext} onBack={handleBack} syncWithStore={true} />;
+    case 7:
       return <FinalConsole onBack={handleBack} onsubmit={ handleSubmit} />;
     default:
       return null;
@@ -79,7 +82,7 @@ const renderStep = () => {
     <div className="w-full min-h-screen flex flex-col items-center justify-center bg-black text-white p-6">
       <div className="w-full max-w-5xl bg-black border border-white/10 rounded-2xl p-6 shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-6 text-white">
-          Step {step} of 5
+          Step {step} of 7
         </h2>
 
         <div className="flex flex-wrap justify-between gap-4">

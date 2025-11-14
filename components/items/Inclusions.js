@@ -44,7 +44,7 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
       const hasVisa = inclusions.some((item) => item.toLowerCase().includes("visa"));
       const pax = Number(quoteData?.basic?.pax || 1);
 
-      // If Visa present: POSITIVE 2000*pax, If NOT: NEGATIVE 1600*pax
+      // If Visa present: POSITIVE 2000*pax, If NOT: NEGATIVE 1500*pax
       updateStepData("inclusion", { 
         inclusions, 
         visaAmount: hasVisa ? 2000 * pax : -1500 * pax 

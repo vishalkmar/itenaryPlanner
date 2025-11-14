@@ -47,6 +47,10 @@ const QuoteZ = z.object({
     markupPercent: z.number().optional().default(0),
     markupAmount: z.number().optional().default(0),
     grandTotal: z.number().optional().default(0),
+    applyGstTcs: z.boolean().optional().default(false),
+    gstAmount: z.number().optional().default(0),
+    tcsAmount: z.number().optional().default(0),
+    finalTotal: z.number().optional().default(0),
     pricePerPerson: z.number().optional().default(0),
     activityCostTotal: z.number().optional().default(0),
   }).optional(),
@@ -82,39 +86,42 @@ export async function POST(request) {
     }
     const mealTotal = q?.meal?.totalPrice || 0;
 
+    // visa logic: 
+    // if 'visa' in inclusions -> visaAmount = 2000 * pax (ADDED to total)
+    // if 'visa' NOT in inclusions -> visaAmount = -1500 * pax (SUBTRACTED from total)
     const hasVisa = Array.isArray(q?.inclusion?.inclusions)
-  ? q.inclusion.inclusions.some((it) => String(it || "").toLowerCase().includes("visa"))
-  : false;
+      ? q.inclusion.inclusions.some((it) => String(it || "").toLowerCase().includes("visa"))
+      : false;
 
-const paxx = Number(q?.basic?.pax || 1);
-
-// If Visa present: POSITIVE 2000*pax, If NOT: NEGATIVE 1600*pax
-const visaAmount = hasVisa ? 2000 * paxx : -1600 * paxx;
-    // const visaRaw = Number(q?.inclusion?.visaAmount || 0);
-    // const hasVisa = Array.isArray(q?.inclusion?.inclusions)
-    //   ? q.inclusion.inclusions.some((it) => String(it || "").toLowerCase().includes("visa"))
-    //   : false;
-
-    // const visaAmount = hasVisa ? -Math.abs(visaRaw) : visaRaw;
+    const pax = Number(q?.basic?.pax || 1);
+    const visaAmount = hasVisa ? 2000 * pax : -1500 * pax;
 
     // compute activity cost total: itineraryTotal * 238 (INR multiplier)
     const ACTIVITY_MULTIPLIER = 238;
     const activityCostTotal = Number((itineraryTotal * ACTIVITY_MULTIPLIER) || 0);
 
-    // mainTotal: accommodation + activityCostTotal + meal - visa
+    // mainTotal: accommodation + activityCostTotal + meal + visaAmount
+    // (if visa in inclusions, visaAmount is positive and gets added)
+    // (if visa not in inclusions, visaAmount is negative and gets subtracted)
     const mainTotal =
-      Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) - Number(visaAmount);
+      Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) + Number(visaAmount);
 
     // markup: percentage applied on mainTotal
     const markupPercent = Number(q?.totals?.markupPercent || 0);
     const markupAmount = Number(((mainTotal * markupPercent) / 100) || 0);
 
-    // grandTotal: accommodation + activityCostTotal + meal + markupAmount - visa
-    const grandTotal = Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) + Number(markupAmount) - Number(visaAmount);
+    // grandTotal: accommodation + activityCostTotal + meal + markupAmount + visaAmount
+    // (visaAmount can be positive or negative based on whether visa is included)
+    const grandTotal = Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) + Number(markupAmount) + Number(visaAmount);
 
-    // compute price per person (grandTotal / pax)
-    const pax = Number(q?.basic?.pax || 1);
-    const pricePerPerson = Number((grandTotal / pax) || 0);
+    // GST (5%) and TCS (5%) calculation
+    const applyGstTcs = q?.totals?.applyGstTcs || false;
+    const gstAmount = applyGstTcs ? Number((grandTotal * 5) / 100) : 0;
+    const tcsAmount = applyGstTcs ? Number((grandTotal * 5) / 100) : 0;
+    const finalTotal = grandTotal + gstAmount + tcsAmount;
+
+    // compute price per person (finalTotal / pax)
+    const pricePerPerson = Number((finalTotal / pax) || 0);
  
    
     // attach computed totals and normalized inclusion visaAmount
@@ -128,6 +135,10 @@ const visaAmount = hasVisa ? 2000 * paxx : -1600 * paxx;
       markupPercent,
       markupAmount,
       grandTotal,
+      applyGstTcs,
+      gstAmount,
+      tcsAmount,
+      finalTotal,
       pricePerPerson,
       activityCostTotal,
     };

@@ -78,8 +78,16 @@ export default function ExcelGenerator({ quote }) {
 
     // Totals Sheet
     const totals = [
+      ["Accommodation Total", Number(quote.totals?.accommodationTotal || 0)],
+      ["Activity Cost Total", Number(quote.totals?.activityCostTotal || 0)],
+      ["Meal Total", Number(quote.totals?.mealTotal || 0)],
+      ["Visa Amount", Number(quote.totals?.visaAmount || 0)],
       ["Markup %", Number(quote.totals?.markupPercent || 0)],
       ["Markup Amount", Number(quote.totals?.markupAmount || 0)],
+      ["Grand Total (Before GST/TCS)", Number(quote.totals?.grandTotal || 0)],
+      ["GST (5%)", Number(quote.totals?.gstAmount || 0)],
+      ["TCS (5%)", Number(quote.totals?.tcsAmount || 0)],
+      ["Final Total", Number(quote.totals?.finalTotal || quote.totals?.grandTotal || 0)],
       ["Price Per Person", Number(quote.totals?.pricePerPerson || 0)],
     ];
 

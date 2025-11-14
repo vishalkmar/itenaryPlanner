@@ -299,30 +299,64 @@ export default function QuotePreviewPage() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Breakdown */}
-              <div className="space-y-3">
-               
+              {/* Cost Breakdown */}
+              <div className="space-y-3 bg-black/30 p-4 rounded">
+                <h4 className="font-semibold text-cyan-300 mb-3">Cost Breakdown</h4>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-300">Accommodation</span>
+                  <span className="font-semibold">INR {Number(totals.accommodationTotal||0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-300">Activity Cost</span>
+                  <span className="font-semibold">INR {Number(totals.activityCostTotal||0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-300">Meals</span>
+                  <span className="font-semibold">INR {Number(totals.mealTotal||0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-red-400">
+                  <span className="text-gray-300">Visa Amount</span>
+                  <span className="font-semibold">INR {Number(totals.visaAmount||0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                </div>
               </div>
 
               {/* Markup & Grand Total */}
               <div className="space-y-3 bg-black/30 p-4 rounded">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Markup Percentage</span>
-                  <span className="font-semibold text-cyan-300">{Number(totals.markupPercent||0).toFixed(1)}%</span>
+                <h4 className="font-semibold text-cyan-300 mb-3">Markup & Taxes</h4>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-300">Markup ({Number(totals.markupPercent||0).toFixed(1)}%)</span>
+                  <span className="font-semibold">INR {Number(totals.markupAmount||0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Markup Amount</span>
-                  <span className="font-semibold text-cyan-300">INR {Number(totals.markupAmount||0).toLocaleString()}</span>
+                <div className="flex justify-between items-center text-sm border-t border-white/10 pt-2">
+                  <span className="text-gray-300 font-semibold">Grand Total</span>
+                  <span className="font-bold text-blue-400">INR {Number(totals.grandTotal||0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
                 </div>
-                <div className="border-t border-white/10 pt-3 flex justify-between items-center text-2xl">
-                  <span className="font-bold text-gray-100">Price Per Person</span>
-                  <span className="font-bold text-emerald-400">INR {Number(totals.pricePerPerson || 0).toLocaleString()}</span>
+                {totals.applyGstTcs && (
+                  <>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-300">GST (5%)</span>
+                      <span className="font-semibold">INR {Number(totals.gstAmount||0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-300">TCS (5%)</span>
+                      <span className="font-semibold">INR {Number(totals.tcsAmount||0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div className="bg-emerald-500/20 border border-emerald-500/50 rounded p-2 mt-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-bold text-emerald-300">FINAL TOTAL</span>
+                        <span className="font-bold text-emerald-400">INR {Number(totals.finalTotal || totals.grandTotal || 0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+                <div className="border-t border-white/10 pt-3 flex justify-between items-center bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded p-2">
+                  <span className="font-bold text-gray-100 text-sm">Price Per Person</span>
+                  <span className="font-bold text-pink-400">INR {Number(totals.pricePerPerson || 0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
-
       </div>
     
     </div>

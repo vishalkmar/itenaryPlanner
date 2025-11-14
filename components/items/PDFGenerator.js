@@ -342,7 +342,13 @@ function generatePDFHTML(quote) {
 
         <div class="section">
           <div class="total-box">
-            <div class="total-label">PRICE PER PERSON</div>
+           
+            <div class="total-label" style="font-size:1rem;" >PRICE PER PERSON</div>
+             ${totals.applyGstTcs ? `
+            <div class="total-label" style="padding: 8px; font-size:1rem; margin: -15px -15px 10px -15px; border-radius: 4px 4px 0 0; font-size: 11px;">
+              ✓  GST @5% & TCS @5% as per applicable travel cost
+            </div>
+            ` : ""}
             <div class="total-value">₹ ${Number(totals.pricePerPerson || 0).toLocaleString("en-IN")}</div>
           </div>
         </div>

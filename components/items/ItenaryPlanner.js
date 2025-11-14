@@ -15,7 +15,7 @@ const activitySets = {
   oneToSix: [
     { label: "Nizwa & Jabal Al Akhdar", value: "Nizwa & Jabal Al Akhdar", price: 130 },
     { label: "Jabal Shams & MisFat Al Abrigyeen", value: "Jabal Shams & MisFat Al Abrigyeen", price: 130 },
-    { label: "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Widi Tiwi", value: "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Widi Tiwi", price: 130 },
+    { label: "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Fins Beach", value: "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Widi Tiwi", price: 130 },
     { label: "Desert & Wadi Bani Khalid", value: "Desert & Wadi Bani Khalid", price: 130 },
     { label: "Nakhal & AL Rustaq", value: "Nakhal & AL Rustaq", price: 130 },
     { label: "Full day Nizwa Tour - Nizwa Fort , Nizwa Souq", value: "Full day Nizwa Tour - Nizwa Fort , Nizwa Souq", price: 130 },

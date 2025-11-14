@@ -96,7 +96,13 @@ const QuoteSchema = new mongoose.Schema(
       markupAmount: { type: Number, default: 0 },
       // grand total after applying markup
       grandTotal: { type: Number, default: 0 },
-      // price per person (grandTotal / pax)
+      // GST and TCS fields
+      applyGstTcs: { type: Boolean, default: false },
+      gstAmount: { type: Number, default: 0 },
+      tcsAmount: { type: Number, default: 0 },
+      // final total after GST and TCS
+      finalTotal: { type: Number, default: 0 },
+      // price per person (finalTotal / pax)
       pricePerPerson: { type: Number, default: 0 },
       // activity cost total stored as itineraryTotal * 238 (INR multiplier)
       activityCostTotal: { type: Number, default: 0 },
