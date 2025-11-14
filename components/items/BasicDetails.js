@@ -3,6 +3,17 @@
 import React, { useEffect, useState } from "react";
 import useQuoteStore from "./ItenaryStore";
 
+function getNightsBetweenDates(startDate, endDate) {
+  if (!startDate || !endDate) return 0;
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
+  // diff = number of nights (eg: start=15, end=20 => 19-15=4, +1 => 5 nights)
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const diff = Math.floor((end.getTime() - start.getTime()) / msPerDay);
+  return diff > 0 ? diff : 0;
+}
+
 export default function BasicDetails({ syncWithStore = false, showNav = true }) {
   const { updateStepData, quoteData } = useQuoteStore();
 
@@ -12,6 +23,7 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
   const [endDate, setEndDate] = useState(initial.endDate || "");
   const [nights, setNights] = useState(Number(initial.nights || 0));
   const [pax, setPax] = useState(Number(initial.pax || 1));
+  const [nightsAuto, setNightsAuto] = useState(0);
 
   useEffect(() => {
     // when store loads an existing quote, sync local values
@@ -24,13 +36,22 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
   }, [quoteData]);
 
   useEffect(() => {
+    // Whenever startDate or endDate changes, auto calc nights
+    const calculatedNights = getNightsBetweenDates(startDate, endDate);
+    setNightsAuto(calculatedNights);
+    // If both dates are selected, update nights value
+    if (startDate && endDate && calculatedNights > 0) {
+      setNights(calculatedNights);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate, endDate]);
+
+  useEffect(() => {
     if (!syncWithStore) return;
     const payload = { startDate, endDate, nights: Number(nights || 0), pax: Number(pax || 1) };
     updateStepData("basic", payload);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, nights, pax, syncWithStore]);
-
-  const nightsOptions = Array.from({ length: 30 }, (_, i) => i + 1);
 
   return (
     <div className="w-full bg-black text-white rounded-2xl p-6 shadow-xl relative z-10">
@@ -52,34 +73,44 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
             type="date"
             value={endDate || ""}
             onChange={(e) => setEndDate(e.target.value)}
+            min={startDate || undefined}
             className="w-full p-2 rounded bg-white/5 text-white"
           />
         </div>
 
         <div>
           <label className="text-sm text-gray-400">Nights</label>
-          <select
-            value={nights}
-            onChange={(e) => setNights(Number(e.target.value))}
-            className="w-full p-2 rounded bg-white/5 text-white"
-          >
-            <option value={0}>Select nights</option>
-            {nightsOptions.map((n) => (
-              <option key={n} value={n}>
-                {n} night{n > 1 ? "s" : ""} / {n + 1} day{n + 1 > 1 ? "s" : ""}
-              </option>
-            ))}
-          </select>
+          {startDate && endDate && nightsAuto > 0 ? (
+            <input
+              type="text"
+              className="w-full p-2 rounded bg-white/5 text-white cursor-not-allowed"
+              value={`${nightsAuto} night${nightsAuto > 1 ? "s" : ""} / ${nightsAuto + 1} day${nightsAuto + 1 > 1 ? "s" : ""}`}
+              disabled
+            />
+          ) : (
+            <select
+              value={nights}
+              onChange={(e) => setNights(Number(e.target.value))}
+              className="w-full p-2 rounded bg-white/5 text-white"
+            >
+              <option value={0}>Select nights</option>
+              {Array.from({ length: 30 }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>
+                  {n} night{n > 1 ? "s" : ""} / {n + 1} day{n + 1 > 1 ? "s" : ""}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div>
           <label className="text-sm text-gray-400">PAX (persons)</label>
           <input
             type="number"
-            min="0"
+            min="1"
             step="1"
             value={pax}
-            onChange={(e) => setPax(Number(e.target.value || 0))}
+            onChange={(e) => setPax(Number(e.target.value || 1))}
             className="w-full p-2 rounded bg-white/5 text-white"
           />
         </div>

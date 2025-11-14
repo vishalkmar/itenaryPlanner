@@ -1,42 +1,88 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import html2pdf from "html2pdf.js";
 
+// Main Component with Rename Functionality
 export default function PDFGenerator({ quote }) {
-  const generatePDF = () => {
+  // For rename modal
+  const [showRenameBox, setShowRenameBox] = useState(false);
+  const [filename, setFilename] = useState("");
+  const inputRef = useRef(null);
+
+  // Button click to open modal
+  const handleBtnClick = () => {
+    setFilename(""); // blank for every open
+    setShowRenameBox(true);
+    setTimeout(() => { if(inputRef.current) inputRef.current.focus(); }, 200);
+  };
+
+  // PDF Generation
+  const generatePDF = (name) => {
     if (!quote) {
       alert("No quote data found");
       return;
     }
 
-    // Create HTML content for PDF
+    // blank -> fallback name
+    const finalName = (name && name.trim()) ? name.trim() : `booking-confirmation-${quote?._id || "quote"}.pdf`;
+
     const htmlContent = generatePDFHTML(quote);
 
-    // PDF generation options
     const options = {
       margin: 8,
-      filename: `booking-confirmation-${quote._id || "quote"}.pdf`,
+      filename: finalName,
       image: { type: "jpeg", quality: 0.95 },
       html2canvas: { scale: 1.5, useCORS: true },
       jsPDF: { orientation: "portrait", unit: "mm", format: "a4" },
     };
 
-    // Generate and download PDF
     html2pdf().set(options).from(htmlContent).save();
+    setShowRenameBox(false);
   };
 
   return (
-    <button
-      onClick={generatePDF}
-      className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold hover:opacity-90 transition"
-    >
-      📄 Generate PDF
-    </button>
+    <>
+      <button
+        onClick={handleBtnClick}
+        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold hover:opacity-90 transition"
+      >
+        📄 Generate PDF
+      </button>
+
+      {showRenameBox && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 min-w-[320px] text-black animate-fade-in">
+            <h3 className="font-bold text-lg mb-4">Enter PDF filename</h3>
+            <input
+              ref={inputRef}
+              className="mb-4 w-full border border-blue-400 px-3 py-2 rounded text-black bg-white"
+              type="text"
+              value={filename}
+              onChange={e => setFilename(e.target.value)}
+              placeholder="Enter PDF filename"
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowRenameBox(false)}
+                className="px-3 py-2 rounded bg-gray-100 hover:bg-gray-300 text-gray-700 font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => generatePDF(filename)}
+                className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              >
+                Download PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
-
-// Helper: Generate HTML template for PDF
+// PDF HTML Generator stays the same (your code)
 function generatePDFHTML(quote) {
   const basic = quote.basic || {};
   const itinerary = quote.itinerary || {};
@@ -137,7 +183,7 @@ function generatePDFHTML(quote) {
     .map((inc) => `<div style="Margin:4px 0; font-size:11px;">• ${inc}</div>`)
     .join("");
 
-  // HTML template
+  // HTML template no changes from your provided code, keep as is.
   const html = `
     <!DOCTYPE html>
     <html lang="en">
