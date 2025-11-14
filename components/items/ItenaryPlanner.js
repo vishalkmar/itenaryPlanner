@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -6,14 +5,12 @@ import Select from "react-select";
 import { Trash2, Plus, ChevronDown, ChevronUp, X } from "lucide-react";
 import useQuoteStore from "./ItenaryStore";
 
-// SHOULD SHOW QTY BOX FUNCTION: FIXED!
 const shouldShowQtyBox = (value) =>
   typeof value === "string" &&
   (value.toLowerCase().includes("dimaniyat") ||
-   value.toLowerCase().includes("dolphin") ||
-   value.toLowerCase().includes("dhow"));
+    value.toLowerCase().includes("dolphin") ||
+    value.toLowerCase().includes("dhow"));
 
-// ---------- Original Activity Sets (unchanged) ----------
 const activitySets = {
   oneToSix: [
     { label: "Nizwa & Jabal Al Akhdar", value: "Nizwa & Jabal Al Akhdar", price: 130 },
@@ -33,11 +30,11 @@ const activitySets = {
     { label: "Jabal Al Akhdar", value: "Jabal Al Akhdar", price: 130 },
     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Pick-Up (08:00 morning)\nWadi Bani Khalid\nDesert camp check-in\nSunset Dune Drive\nOvernight at camp" },
     { label: "Overnight Desert Tour Wahiba Sands", value: "Overnight Desert Tour Wahiba Sands", price: 135, description: "Wadi Tiwi\nWadi Shab (optional 45-min Hike & Swim)\nBimah Sinkhole\nReturn to Muscat" },
-    { label: "Transfer From Muscat Airport To Hotel", value:  "Transfer From Muscat Airport To Hotel", price: 20 },
-    { label: "Transfer From Muscat Hotel to Muscal Airport", value:  "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
+    { label: "Transfer From Muscat Airport To Hotel", value: "Transfer From Muscat Airport To Hotel", price: 20 },
+    { label: "Transfer From Muscat Hotel to Muscal Airport", value: "Transfer From Muscat Hotel to Muscal Airport", price: 20 },
     { label: "Transfer From Salalah Airport to Salalah Hotel", value: "Transfer From Salalah Airport to Salalah Hotel", price: 20 },
-    { label: "Transfer From Salalah Hotel to Salalah Airport", value:  "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
-    { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value:  "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
+    { label: "Transfer From Salalah Hotel to Salalah Airport", value: "Transfer From Salalah Hotel to Salalah Airport", price: 20 },
+    { label: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", value: "Full Day Muscat City Tour - Qurum Beach, Royal Opera House, Mutrah Souq, Mutrah Fort, sultan Quboos Mosque", price: 130 },
   ],
   sixToTen: [],
   tenToFifteen: [],
@@ -45,25 +42,27 @@ const activitySets = {
 activitySets.sixToTen = [...activitySets.oneToSix];
 activitySets.tenToFifteen = [...activitySets.oneToSix];
 
-
-// ---------- Description Select Options ----------
 const descriptionOptions = [
   { value: "Other", label: "Other (Custom)" },
   { value: "Transfer from Muscat Airport to Muscat Hotel", label: "Transfer From Muscat Airport to Muscat Hotel" },
-   { value: "Check-in to Hotel", label: "Check-in to Hotel" },
-    { value: "Relex at Hotel", label: "Relex at Hotel" },
-     { value: "Breakfast at Hotel", label: "Breakfast at Hotel" },
-      { value: "Return to Hotel and overnight stay", label: "Return to Hotel and overnight stay" },
-      { value: "Drop back to hotel and overnight stay", label: "Drop back to hotel and overnight stay" },
-      { value: "Check-Out From Hotel", label: "Check-Out From Hotel" },
-      { value: "Transfer from Hotel to Airport", label: "Transfer from Hotel to Airport" },
-        { value: "Check-in to hotel (Best Western Premier Muscat)", label: "Check-in to hotel (Best Western Premier Muscat)" },
-      { value: "leisure Day", label: "leisure Day" },
+  { value: "Check-in to Hotel", label: "Check-in to Hotel" },
+  { value: "Relex at Hotel", label: "Relex at Hotel" },
+  { value: "Breakfast at Hotel", label: "Breakfast at Hotel" },
+  { value: "Return to Hotel and overnight stay", label: "Return to Hotel and overnight stay" },
+  { value: "Drop back to hotel and overnight stay", label: "Drop back to hotel and overnight stay" },
+  { value: "Check-Out From Hotel", label: "Check-Out From Hotel" },
+  { value: "Transfer from Hotel to Airport", label: "Transfer from Hotel to Airport" },
+  { value: "Check-in to hotel (Best Western Premier Muscat)", label: "Check-in to hotel (Best Western Premier Muscat)" },
+  { value: "leisure Day", label: "leisure Day" },
   ...activitySets.oneToSix.map(act => ({ value: act.label, label: act.label })),
-  
 ];
 
-export default function ItineraryPlanner({ onNext = () => {}, onBack = () => {}, syncWithStore = false, showNav = true }) {
+export default function ItineraryPlanner({
+  onNext = () => { },
+  onBack = () => { },
+  syncWithStore = false,
+  showNav = true
+}) {
   const { updateStepData, quoteData } = useQuoteStore();
 
   const [selectedCategory, setSelectedCategory] = useState(() =>
@@ -71,25 +70,30 @@ export default function ItineraryPlanner({ onNext = () => {}, onBack = () => {},
   );
   const [activityOptions, setActivityOptions] = useState(activitySets.oneToSix);
 
-  // --- Days
   const [days, setDays] = useState(() =>
     quoteData?.itinerary?.days && Array.isArray(quoteData.itinerary.days) && quoteData.itinerary.days.length
       ? quoteData.itinerary.days.map(day => ({
-          ...day,
-          descriptionList: day.descriptionList || [],
-          showOtherInput: false,
-          otherText: ""
-        }))
+        ...day,
+        descriptionList: day.descriptionList || [],
+        showOtherInput: false,
+        otherText: "",
+        // --- NEW: set qty 0 if should show qty
+        activities: (day.activities || []).map(a =>
+          shouldShowQtyBox(a.value)
+            ? { ...a, qty: a.qty !== undefined ? a.qty : 0 }
+            : a
+        ),
+      }))
       : [{
-          id: 1,
-          title: "Day 1",
-          description: "",
-          descriptionList: [],
-          showOtherInput: false,
-          otherText: "",
-          activities: [],
-          open: true
-        }]
+        id: 1,
+        title: "Day 1",
+        description: "",
+        descriptionList: [],
+        showOtherInput: false,
+        otherText: "",
+        activities: [],
+        open: true,
+      }]
   );
   const [totalActivityPrice, setTotalActivityPrice] = useState(0);
   const [newActivityName, setNewActivityName] = useState("");
@@ -134,37 +138,21 @@ export default function ItineraryPlanner({ onNext = () => {}, onBack = () => {},
     );
   };
 
-  // const handleAddDay = () => {
-  //   setDays([
-  //     ...days.map((d) => ({ ...d, open: false })), // collapse previous
-  //     {
-  //       id: days.length + 1,
-  //       title: `Day ${days.length + 1}`,
-  //       description: "",
-  //       descriptionList: [],
-  //       showOtherInput: false,
-  //       otherText: "",
-  //       activities: [],
-  //       open: true
-  //     },
-  //   ]);
-  // };
-
-const handleAddDay = () => {
-  setDays((prevDays) => [
-    ...prevDays.map((d) => ({ ...d, open: false })),
-    {
-      id: prevDays.length + 1,
-      title: `Day ${prevDays.length + 1}`,
-      description: "",
-      descriptionList: [],
-      showOtherInput: false,
-      otherText: "",
-      activities: [],
-      open: true,
-    },
-  ]);
-};
+  const handleAddDay = () => {
+    setDays((prevDays) => [
+      ...prevDays.map((d) => ({ ...d, open: false })),
+      {
+        id: prevDays.length + 1,
+        title: `Day ${prevDays.length + 1}`,
+        description: "",
+        descriptionList: [],
+        showOtherInput: false,
+        otherText: "",
+        activities: [],
+        open: true,
+      },
+    ]);
+  };
 
   const handleRemoveDay = (id) => {
     setDays(days.filter((d) => d.id !== id));
@@ -176,7 +164,6 @@ const handleAddDay = () => {
     setDays(prev =>
       prev.map(day => {
         if (day.id !== dayId) return day;
-        // Other input opens
         if (selectedOption.value === "Other") {
           return { ...day, showOtherInput: true };
         }
@@ -244,10 +231,12 @@ const handleAddDay = () => {
         const selectedActivities = selectedOptions
           ? selectedOptions.map((opt) => {
             const prevAct = prevActs.find((p) => p.value === opt.value);
-            const qty = prevAct?.qty ?? 1;
+            // -- fix: show qty box activities default qty = 0
+            const qty = shouldShowQtyBox(opt.value)
+              ? prevAct?.qty ?? 0
+              : prevAct?.qty ?? 1;
             const basePrice = opt.price ?? opt.basePrice ?? 0;
             const price = basePrice * qty;
-
             return {
               label: opt.label,
               value: opt.value,
@@ -264,7 +253,10 @@ const handleAddDay = () => {
   };
 
   const handleQtyChange = (dayId, activityValue, qtyRaw) => {
-    const qty = Math.max(1, Math.floor(Number(qtyRaw) || 0));
+    // qty for qty-box activities now starts at 0!
+    let qty = Math.floor(Number(qtyRaw));
+    qty = isNaN(qty) ? 0 : qty;
+    qty = Math.max(0, qty); // allow 0 too
     setDays((prev) =>
       prev.map((day) => {
         if (day.id !== dayId) return day;
@@ -292,12 +284,16 @@ const handleAddDay = () => {
     setNewActivityPrice("");
   };
 
+  // ---------- Responsive classes helper ----------
+  const mobileFlex = "flex flex-col md:flex-row gap-2";
+  const mobInput = "w-full md:w-auto";
+
   // ------------------- RENDER -------------------
   return (
     <div className="w-full bg-black text-white rounded-2xl p-6 shadow-xl relative z-10">
       <h2 className="text-3xl font-bold mb-6 text-center">Itinerary Planner</h2>
       {/* Tabs */}
-      <div className="flex justify-center mb-6 gap-3 flex-wrap">
+      <div className={`flex justify-center mb-6 gap-3 flex-wrap`}>
         {[
           { key: "oneToSix", label: "1 - 6 People" },
           { key: "sixToTen", label: "6 - 10 People" },
@@ -307,9 +303,9 @@ const handleAddDay = () => {
             key={tab.key}
             onClick={() => handleCategoryChange(tab.key)}
             className={`px-4 py-2 rounded-lg font-semibold ${selectedCategory === tab.key
-              ? "bg-white/40 text-black"
-              : "bg-white/10 hover:bg-white/20"
-            }`}
+                ? "bg-white/40 text-black"
+                : "bg-white/10 hover:bg-white/20"
+              }`}
           >
             {tab.label}
           </button>
@@ -323,7 +319,10 @@ const handleAddDay = () => {
         >
           {/* Header */}
           <div
-            className="flex justify-between items-center px-4 py-3 cursor-pointer bg-white/10 hover:bg-white/20 transition-all"
+            className={`
+              flex justify-between items-center px-4 py-3 cursor-pointer bg-white/10 hover:bg-white/20 transition-all
+              ${mobileFlex}
+            `}
             onClick={() => toggleDayOpen(day.id)}
           >
             <h3 className="text-lg font-semibold">{day.title}</h3>
@@ -343,11 +342,12 @@ const handleAddDay = () => {
           {/* Body */}
           {day.open && (
             <div className="p-4 bg-black/40 relative z-20">
-              {/* NEW: Description Select, not textarea */}
+              {/* Description Select (responsive) */}
               <label className="block mb-2 text-sm font-semibold">Description (Select/Add Below)</label>
-              <div className="flex gap-2 items-center mb-2">
+              <div className={`gap-2 items-center mb-2 ${mobileFlex}`}>
                 <select
-                  className="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 flex-1"
+                  className="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 
+             w-auto max-w-full md:w-60"
                   value=""
                   onChange={e => {
                     const val = e.target.value;
@@ -356,30 +356,31 @@ const handleAddDay = () => {
                     handleDescriptionSelect(found, day.id);
                   }}
                 >
-                  <option value="">-- Add to Description --</option>
+                  <option value="">Add Description</option>
                   {descriptionOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
+
                 {day.showOtherInput && (
-                  <>
+                  <div className={mobileFlex}>
                     <input
                       type="text"
                       placeholder="Other description..."
-                      className="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 flex-1"
+                      className={`bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 flex-1 ${mobInput}`}
                       value={day.otherText}
                       onChange={e => handleOtherInput(day.id, e.target.value)}
                     />
                     <button
                       onClick={() => handleAddOtherDesc(day.id)}
-                      className="bg-green-500 text-white px-3 py-2 rounded-lg"
+                      className={`bg-green-500 text-white px-3 py-2 rounded-lg ${mobInput}`}
                     >
                       Add
                     </button>
-                  </>
+                  </div>
                 )}
               </div>
-              {/* Display description items like chips/cards with remove */}
+              {/* Description chips/cards */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {day.descriptionList.length === 0 && (
                   <span className="text-gray-400 text-sm">No description items added.</span>
@@ -391,17 +392,17 @@ const handleAddDay = () => {
                       type="button"
                       className="ml-1 text-red-400 hover:text-red-200"
                       onClick={() => handleRemoveDesc(desc, day.id)}
-                    ><X size={14}/></button>
+                    ><X size={14} /></button>
                   </div>
                 ))}
               </div>
-              {/* Original Activities Logic (multi select, qty, pricing) */}
+              {/* Activities */}
               <label className="block mb-2 text-sm font-semibold">
                 Select Activities
               </label>
               <Select
-                instanceId={`day-${day.id}-activities`}           // 👈 FIX
-                 inputId={`day-${day.id}-activities-input`}        // (optional but nice)
+                instanceId={`day-${day.id}-activities`}
+                inputId={`day-${day.id}-activities-input`}
                 isMulti
                 menuPortalTarget={typeof window !== "undefined" ? document.body : null}
                 options={activityOptions}
@@ -429,24 +430,24 @@ const handleAddDay = () => {
                 }}
               />
               {/* Add Custom Activity */}
-              <div className="flex items-center gap-2 mb-3">
+              <div className={`mb-3 ${mobileFlex}`}>
                 <input
                   type="text"
                   placeholder="Activity name"
-                  className="bg-white/10 text-white p-2 rounded-lg flex-1"
+                  className={`bg-white/10 text-white p-2 rounded-lg flex-1 ${mobInput}`}
                   value={newActivityName}
                   onChange={(e) => setNewActivityName(e.target.value)}
                 />
                 <input
                   type="number"
                   placeholder="Price"
-                  className="bg-white/10 text-white p-2 rounded-lg w-24"
+                  className={`bg-white/10 text-white p-2 rounded-lg md:w-24 ${mobInput}`}
                   value={newActivityPrice}
                   onChange={(e) => setNewActivityPrice(e.target.value)}
                 />
                 <button
                   onClick={handleAddNewActivity}
-                  className="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg flex items-center gap-1"
+                  className={`bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg flex items-center gap-1 ${mobInput}`}
                 >
                   <Plus size={16} /> Add
                 </button>
@@ -457,9 +458,9 @@ const handleAddDay = () => {
                   {day.activities.map((a, i) => (
                     <li
                       key={i}
-                      className="flex flex-col md:flex-row md:items-center md:justify-between bg-white/10 px-3 py-2 rounded-lg text-sm gap-2"
+                      className={`flex flex-col md:flex-row md:items-center md:justify-between bg-white/10 px-3 py-2 rounded-lg text-sm gap-2`}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className={mobileFlex}>
                         <span className="font-medium">{a.label}</span>
                         {shouldShowQtyBox(a.value) && (
                           <span className="text-xs text-white/70">
@@ -467,14 +468,14 @@ const handleAddDay = () => {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className={mobileFlex}>
                         {shouldShowQtyBox(a.value) && (
                           <input
                             type="number"
-                            min={1}
-                            value={a.qty ?? 1}
+                            min={0}
+                            value={a.qty ?? 0}
                             onChange={(e) => handleQtyChange(day.id, a.value, e.target.value)}
-                            className="w-20 bg-white/10 text-white p-1 rounded-lg text-center"
+                            className={`w-20 bg-white/10 text-white p-1 rounded-lg text-center ${mobInput}`}
                           />
                         )}
                         <span className="font-semibold">OMR {Number(a.price || 0).toFixed(2)}</span>
@@ -506,9 +507,18 @@ const handleAddDay = () => {
       </div>
       {/* Navigation */}
       {showNav && (
-        <div className="flex justify-between">
-          <button onClick={onBack} className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg">Back</button>
-          <button onClick={() => { updateStepData("itinerary", { selectedCategory, days, totalActivityPrice }); onNext(); }} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg">Next</button>
+        <div className={`flex flex-col md:flex-row gap-2 justify-between`}>
+          <button
+            onClick={onBack}
+            className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg"
+          >Back</button>
+          <button
+            onClick={() => {
+              updateStepData("itinerary", { selectedCategory, days, totalActivityPrice });
+              onNext();
+            }}
+            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg"
+          >Next</button>
         </div>
       )}
     </div>

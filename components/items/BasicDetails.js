@@ -8,7 +8,6 @@ function getNightsBetweenDates(startDate, endDate) {
   const start = new Date(startDate);
   const end = new Date(endDate);
   if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
-  // diff = number of nights (eg: start=15, end=20 => 19-15=4, +1 => 5 nights)
   const msPerDay = 24 * 60 * 60 * 1000;
   const diff = Math.floor((end.getTime() - start.getTime()) / msPerDay);
   return diff > 0 ? diff : 0;
@@ -19,19 +18,28 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
 
   const initial = quoteData?.basic || {};
 
+  // Default pax is 0 (no value present)
   const [startDate, setStartDate] = useState(initial.startDate || "");
   const [endDate, setEndDate] = useState(initial.endDate || "");
   const [nights, setNights] = useState(Number(initial.nights || 0));
-  const [pax, setPax] = useState(Number(initial.pax || 1));
+  const [pax, setPax] = useState(
+    initial.pax !== undefined ? Number(initial.pax) : 0
+  );
   const [nightsAuto, setNightsAuto] = useState(0);
 
   useEffect(() => {
     // when store loads an existing quote, sync local values
     const b = quoteData?.basic || {};
+
     if ((b.startDate || "") !== startDate) setStartDate(b.startDate || "");
     if ((b.endDate || "") !== endDate) setEndDate(b.endDate || "");
     if ((Number(b.nights) || 0) !== nights) setNights(Number(b.nights || 0));
-    if ((Number(b.pax) || 1) !== pax) setPax(Number(b.pax || 1));
+
+    // For pax, allow zero as valid value
+    if (
+      (b.pax !== undefined ? Number(b.pax) : 0) !== pax
+    )
+      setPax(b.pax !== undefined ? Number(b.pax) : 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quoteData]);
 
@@ -48,7 +56,12 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
 
   useEffect(() => {
     if (!syncWithStore) return;
-    const payload = { startDate, endDate, nights: Number(nights || 0), pax: Number(pax || 1) };
+    const payload = {
+      startDate,
+      endDate,
+      nights: Number(nights || 0),
+      pax: Number(pax || 0),
+    };
     updateStepData("basic", payload);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, nights, pax, syncWithStore]);
@@ -56,7 +69,6 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
   return (
     <div className="w-full bg-black text-white rounded-2xl p-6 shadow-xl relative z-10">
       <h2 className="text-2xl font-bold mb-4">Basic Details</h2>
-
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
         <div>
           <label className="text-sm text-gray-400">Start Date</label>
@@ -77,14 +89,15 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
             className="w-full p-2 rounded bg-white/5 text-white"
           />
         </div>
-
         <div>
           <label className="text-sm text-gray-400">Nights</label>
           {startDate && endDate && nightsAuto > 0 ? (
             <input
               type="text"
               className="w-full p-2 rounded bg-white/5 text-white cursor-not-allowed"
-              value={`${nightsAuto} night${nightsAuto > 1 ? "s" : ""} / ${nightsAuto + 1} day${nightsAuto + 1 > 1 ? "s" : ""}`}
+              value={`${nightsAuto} night${nightsAuto > 1 ? "s" : ""} / ${
+                nightsAuto + 1
+              } day${nightsAuto + 1 > 1 ? "s" : ""}`}
               disabled
             />
           ) : (
@@ -102,20 +115,23 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
             </select>
           )}
         </div>
-
         <div>
           <label className="text-sm text-gray-400">PAX (persons)</label>
           <input
             type="number"
-            min="1"
+            min="0"
             step="1"
             value={pax}
-            onChange={(e) => setPax(Number(e.target.value || 1))}
+            onChange={(e) => {
+              // Allow manual zero or any number
+              const val = e.target.value;
+              setPax(val === "" ? 0 : Number(val));
+            }}
             className="w-full p-2 rounded bg-white/5 text-white"
+            placeholder="0"
           />
         </div>
       </div>
-
       {showNav && (
         <div className="flex justify-end mt-2">
           <button className="px-4 py-2 bg-white/20 rounded">Next</button>

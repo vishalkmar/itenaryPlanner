@@ -14,7 +14,7 @@ export default function PDFGenerator({ quote }) {
   const handleBtnClick = () => {
     setFilename(""); // blank for every open
     setShowRenameBox(true);
-    setTimeout(() => { if(inputRef.current) inputRef.current.focus(); }, 200);
+    setTimeout(() => { if (inputRef.current) inputRef.current.focus(); }, 200);
   };
 
   // PDF Generation
@@ -103,9 +103,9 @@ function generatePDFHTML(quote) {
   // Day-wise itinerary blocks - TABLE version
   const dayTableRows = days.length > 0
     ? days.map((day) => {
-        const content = day.description || "—";
-        const contentHtml = content.replace(/\n/g, "<br/>");
-        return `
+      const content = day.description || "—";
+      const contentHtml = content.replace(/\n/g, "<br/>");
+      return `
           <tr>
             <td style="font-weight:bold; font-size:12px; background:#f4f8fd; padding:8px; border:1px solid #cce; min-width:70px;">
               ${day.title || "Day"}
@@ -115,7 +115,7 @@ function generatePDFHTML(quote) {
             </td>
           </tr>
         `;
-      }).join("")
+    }).join("")
     : `
       <tr>
         <td colspan="2" style="text-align:center; padding:16px; font-size:12px; color: #999;">
@@ -244,8 +244,10 @@ function generatePDFHTML(quote) {
             </div>
           </div>
           <div class="header-right">
-            <div class="title">Detailed Itinerary</div>
-            <div class="subtitle">${formatDate(basic.startDate)} - ${formatDate(basic.endDate)} ${basic.nights || 0} Nights  ${basic.pax || 0} PAX</div>
+            <div class="title" style="font-size: 2rem; color: #07d5f5;">
+    Detailed Itinerary
+  </div>
+            <div class="subtitle">${formatDate(basic.startDate)} - ${formatDate(basic.endDate)} ${basic.nights || 0} Nights/ ${basic.nights + 1 || 0}Days   ${basic.pax || 0} PAX</div>
           </div>
         </div>
 
@@ -314,11 +316,10 @@ function generatePDFHTML(quote) {
               <div class="offer-section">
                 <div class="offer-title">EXCLUSIONS</div>
                 <div class="offer-content">
-                  ${
-                    (exclusion.exclusions || [])
-                      .map((exc) => `<div class='offer-item'>• ${exc}</div>`)
-                      .join("") || "<div class='offer-item'>No exclusions specified</div>"
-                  }
+                  ${(exclusion.exclusions || [])
+      .map((exc) => `<div class='offer-item'>• ${exc}</div>`)
+      .join("") || "<div class='offer-item'>No exclusions specified</div>"
+    }
                 </div>
               </div>
             </div>
