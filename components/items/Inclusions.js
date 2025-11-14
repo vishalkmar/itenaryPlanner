@@ -47,7 +47,7 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
       // If Visa present: POSITIVE 2000*pax, If NOT: NEGATIVE 1600*pax
       updateStepData("inclusion", { 
         inclusions, 
-        visaAmount: hasVisa ? 2000 * pax : -1600 * pax 
+        visaAmount: hasVisa ? 2000 * pax : -1500 * pax 
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,12 +59,12 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
 
     updateStepData("inclusion", {
       inclusions,
-      visaAmount: hasVisa ? 2000 * pax : -1600 * pax,
+      visaAmount: hasVisa ? 2000 * pax : -1500 * pax,
     });
 
     console.log("Updated inclusion data:", {
       inclusions,
-      visaAmount: hasVisa ? 2000 * pax : -1600 * pax,
+      visaAmount: hasVisa ? 2000 * pax : -1500 * pax,
     });
 
     onNext();

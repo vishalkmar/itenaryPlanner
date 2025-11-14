@@ -164,8 +164,16 @@ export default function ItineraryPlanner({
     ]);
   };
 
-  const handleRemoveDay = (id) => {
-    setDays(days.filter((d) => d.id !== id));
+  const handleRemoveDay = (index) => {
+    // Remove day at specific index and renumber all
+    const filtered = days.filter((_, i) => i !== index);
+    // Renumber days sequentially
+    const renumbered = filtered.map((day, newIndex) => ({
+      ...day,
+      id: newIndex + 1,
+      title: `Day ${newIndex + 1}`
+    }));
+    setDays(renumbered);
   };
 
   // --- NEW LOGIC: Description SELECT instead of textarea ---
@@ -322,7 +330,7 @@ export default function ItineraryPlanner({
         ))}
       </div>
       {/* Days Accordion */}
-      {days.map((day) => (
+      {days.map((day, index) => (
         <div
           key={day.id}
           className="bg-white/10 border border-white/20 rounded-2xl mb-4"
@@ -340,7 +348,7 @@ export default function ItineraryPlanner({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleRemoveDay(day.id);
+                  handleRemoveDay(index);
                 }}
                 className="hover:text-red-400"
               >

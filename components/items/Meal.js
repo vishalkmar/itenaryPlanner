@@ -31,7 +31,7 @@ export default function Meal({ onBack = () => {}, onNext = () => {}, syncWithSto
 
   // ✅ Add new meal
   const confirmAddMeal = () => {
-    const price = Number(tempPrice) > 0 ? Number(tempPrice) : 2000;
+    const price = Number(tempPrice) > 0 ? Number(tempPrice) : 1500;
     const newMeal = { type: adding, price };
     setMealList((prev) => [...prev, newMeal]);
     setAdding(null);
