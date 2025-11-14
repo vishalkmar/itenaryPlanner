@@ -46,6 +46,16 @@ const descriptionOptions = [
   { value: "Other", label: "Other (Custom)" },
   { value: "Transfer from Muscat Airport to Muscat Hotel", label: "Transfer From Muscat Airport to Muscat Hotel" },
   { value: "Check-in to Hotel", label: "Check-in to Hotel" },
+  { value: "Desert Camp Check-in", label: " Desert Camp Check-in" }, 
+
+    { value: "Sunset Dune Drive ", label: "Sunset Dune Drive " },
+      { value: "Overnight at Camp", label: " Overnight at Camp" },
+
+{ value: "Widi Tiwi", label: " Widi Tiwi" },
+{ value: "Wadi Shab (optional 45-min Hike & Swim) ", label: "Wadi Shab (optional 45-min Hike & Swim)" },
+{ value: "Bimah SinKhole", label: " Bimah SinKhole" },
+{ value: "Return to Muscat", label: "Return to Muscat" },
+
   { value: "Relex at Hotel", label: "Relex at Hotel" },
   { value: "Breakfast at Hotel", label: "Breakfast at Hotel" },
   { value: "Return to Hotel and overnight stay", label: "Return to Hotel and overnight stay" },
