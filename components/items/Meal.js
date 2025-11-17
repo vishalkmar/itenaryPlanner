@@ -31,7 +31,10 @@ export default function Meal({ onBack = () => {}, onNext = () => {}, syncWithSto
 
   // ✅ Add new meal
   const confirmAddMeal = () => {
-    const price = Number(tempPrice) > 0 ? Number(tempPrice) : 1500;
+    const pax = Number(quoteData?.basic?.pax || 1);
+    const unit = Number(tempPrice) > 0 ? Number(tempPrice) : 1500; // per-person unit price
+    // store price as total for all pax
+    const price = unit * pax;
     const newMeal = { type: adding, price };
     setMealList((prev) => [...prev, newMeal]);
     setAdding(null);

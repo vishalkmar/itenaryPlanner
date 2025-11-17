@@ -68,6 +68,7 @@ const QuoteSchema = new mongoose.Schema(
     inclusion: {
       inclusions: { type: [String], default: [] },
       visaAmount: { type: Number, default: 0 },
+      customVisaCount: { type: Number, default: 0 },
     },
 
     exclusion: {
@@ -91,6 +92,7 @@ const QuoteSchema = new mongoose.Schema(
       mealTotal: { type: Number, default: 0 },
       visaAmount: { type: Number, default: 0 },
       hasVisa: { type: Boolean, default: false },
+      customVisaCount: { type: Number, default: 0 },
       // markup fields
       markupPercent: { type: Number, default: 0 },
       markupAmount: { type: Number, default: 0 },

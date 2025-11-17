@@ -63,14 +63,29 @@ export async function PATCH(request, { params }) {
     const mealTotal = q?.meal?.totalPrice || 0;
 
     // visa logic: 
-    // if 'visa' in inclusions -> visaAmount = 2000 * pax (ADDED to total)
-    // if 'visa' NOT in inclusions -> visaAmount = -1500 * pax (SUBTRACTED from total)
+    // if 'visa' in inclusions and customVisaCount > 0:
+    //   visaAmount = 2000*customVisaCount + (-1500)*(pax-customVisaCount)
+    // if 'visa' in inclusions and customVisaCount = 0 or not set:
+    //   visaAmount = 2000*pax (all pax with visa)
+    // if 'visa' NOT in inclusions:
+    //   visaAmount = -1500*pax (all pax without visa)
     const hasVisa = Array.isArray(q?.inclusion?.inclusions)
       ? q.inclusion.inclusions.some((it) => String(it || "").toLowerCase().includes("visa"))
       : false;
 
     const pax = Number(q?.basic?.pax || 1);
-    const visaAmount = hasVisa ? 2000 * pax : -1500 * pax;
+      const customVisaCount = (typeof q?.inclusion?.customVisaCount === 'number') ? Number(q.inclusion.customVisaCount) : (hasVisa ? pax : 0);
+
+    let visaAmount;
+      if (customVisaCount > 0) {
+        const visaPeople = Math.min(customVisaCount, pax);
+        const nonVisaPeople = pax - visaPeople;
+        visaAmount = (2000 * visaPeople) + (-1500 * nonVisaPeople);
+      } else if (hasVisa) {
+        visaAmount = 2000 * pax;
+      } else {
+        visaAmount = -1500 * pax;
+    }
 
     // compute activity cost total: itineraryTotal * 238 (INR multiplier)
     const ACTIVITY_MULTIPLIER = 238;
@@ -107,6 +122,7 @@ export async function PATCH(request, { params }) {
       mealTotal,
       visaAmount,
       hasVisa,
+      customVisaCount,
       markupPercent,
       markupAmount,
       grandTotal,
@@ -120,6 +136,7 @@ export async function PATCH(request, { params }) {
 
     if (!q.inclusion) q.inclusion = {};
     q.inclusion.visaAmount = visaAmount;
+    q.inclusion.customVisaCount = customVisaCount;
 
     const updated = await Quote.findByIdAndUpdate(id, q, { new: true });
     if (!updated) return NextResponse.json({ success: false, error: "Quote not found" }, { status: 404 });

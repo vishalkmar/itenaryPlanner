@@ -174,13 +174,40 @@ function generatePDFHTML(quote) {
     .map((m) => m.type)
     .join(", ");
 
+  // Build inclusions list: exclude any raw 'visa' strings and replace meals with a hardcoded Breakfast entry
   const inclusionsWithMeals = [
-    ...(inclusion.inclusions || []),
-    ...(mealsList ? [`Meals: ${mealsList}`] : []),
+    ...( (inclusion.inclusions || []).filter(i => !String(i || "").toLowerCase().includes("visa")) ),
   ];
+
+  // Hardcode Breakfast as included (do not list other meals here)
+  inclusionsWithMeals.push("Meals: Breakfast");
+
+  // Add conditional visa inclusion string based on customVisaCount
+  if (typeof inclusion?.customVisaCount === 'number') {
+    if (inclusion.customVisaCount === basic.pax) {
+      inclusionsWithMeals.push("Visa included");
+    } else if (inclusion.customVisaCount > 0) {
+      inclusionsWithMeals.push(`Visa included for ${inclusion.customVisaCount} person(s)`);
+    }
+  }
 
   const inclusionsList = inclusionsWithMeals
     .map((inc) => `<div style="Margin:4px 0; font-size:11px;">• ${inc}</div>`)
+    .join("");
+
+  // Exclusions list (append visa-not-included line if some pax are without visa)
+  const exclusionsArr = exclusion.exclusions || [];
+  const visaExcludedCount = (inclusion?.customVisaCount !== undefined && basic?.pax !== undefined) ? (basic.pax - (inclusion.customVisaCount || 0)) : 0;
+  const exclusionsWithVisa = [...exclusionsArr];
+  if (visaExcludedCount > 0) {
+    if (visaExcludedCount === basic.pax) {
+      exclusionsWithVisa.push("Visa not included");
+    } else {
+      exclusionsWithVisa.push(`Visa not included for ${visaExcludedCount} person(s)`);
+    }
+  }
+  const exclusionsList = exclusionsWithVisa
+    .map((ex) => `<div style="Margin:4px 0; font-size:11px;">• ${ex}</div>`)
     .join("");
 
   // HTML template no changes from your provided code, keep as is.
@@ -316,10 +343,7 @@ function generatePDFHTML(quote) {
               <div class="offer-section">
                 <div class="offer-title">EXCLUSIONS</div>
                 <div class="offer-content">
-                  ${(exclusion.exclusions || [])
-      .map((exc) => `<div class='offer-item'>• ${exc}</div>`)
-      .join("") || "<div class='offer-item'>No exclusions specified</div>"
-    }
+                  ${exclusionsList || "<div class='offer-item'>No exclusions specified</div>"}
                 </div>
               </div>
             </div>
@@ -336,6 +360,40 @@ function generatePDFHTML(quote) {
                 <div class="info-value">${mealsLunchDinner}</div>
               </div>
             </div>
+          </div>
+        </div>
+        ` : ""}
+
+        <!-- Visa Breakdown (if custom visa count) -->
+        ${inclusion.customVisaCount !== undefined ? `
+        <div class="section">
+          <div class="section-header">VISA DETAILS</div>
+          <div class="section-content">
+            ${inclusion.customVisaCount > 0 && basic.pax > inclusion.customVisaCount ? `
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">✓ With Visa</div>
+                <div class="info-value">${inclusion.customVisaCount} person(s) @ ₹2,000 each = ₹${Number(2000 * inclusion.customVisaCount).toLocaleString('en-IN')}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">✗ Without Visa</div>
+                <div class="info-value">${basic.pax - inclusion.customVisaCount} person(s) @ ₹1,500 each = ₹${Number(1500 * (basic.pax - inclusion.customVisaCount)).toLocaleString('en-IN')}</div>
+              </div>
+            </div>
+            <div class="info-grid" style="margin-top: 8px; border-top: 1px solid #ddd; padding-top: 8px;">
+              <div class="info-item">
+                <div class="info-label" style="font-weight: bold;">Net Visa Amount</div>
+                <div class="info-value" style="font-weight: bold; color: #0066cc;">₹${Number(inclusion.visaAmount || 0).toLocaleString('en-IN')}</div>
+              </div>
+            </div>
+            ` : `
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">All ${basic.pax} Person(s) ${inclusion.customVisaCount === basic.pax ? "With Visa" : "Without Visa"}</div>
+                <div class="info-value">₹${Number(inclusion.visaAmount || 0).toLocaleString('en-IN')}</div>
+              </div>
+            </div>
+            `}
           </div>
         </div>
         ` : ""}

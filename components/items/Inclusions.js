@@ -6,13 +6,13 @@ import useQuoteStore from "./ItenaryStore";
 export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWithStore = false, showNav = true }) {
   const defaultInclusions = [
     "4 nights accommodation in 4★ hotel",
-    "Visa",
     "All Transfers",
     "Half-day Muscat city tour – Qurum Beach, Opera House (outside), Mutrah Souq, Mutrah Fort",
     "Full-day Nizwa tour – Nizwa Fort, Nizwa Souq",
     "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Widi Tiwi",
   ];
 
+ 
   const { quoteData } = useQuoteStore();
   const [inclusions, setInclusions] = useState(() =>
     (quoteData?.inclusion?.inclusions && Array.isArray(quoteData.inclusion.inclusions))
@@ -23,17 +23,29 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
   const [newInclusion, setNewInclusion] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [visaAmount, setVisaAmount] = useState(0); // default 0 if Visa present
+  const [customVisaCount, setCustomVisaCount] = useState(() => {
+    if (quoteData?.inclusion?.customVisaCount !== undefined) return quoteData.inclusion.customVisaCount;
+    return Number(quoteData?.basic?.pax || 0);
+  }); // number of people with visa (default to pax)
 
   const { updateStepData } = useQuoteStore();
 
+
+
   // Load from store only once on component mount or when editing starts (only sync mode)
   useEffect(() => {
-    if (syncWithStore && quoteData?.inclusion) {
-      if (Array.isArray(quoteData.inclusion.inclusions)) {
+    if (syncWithStore && quoteData) {
+      if (Array.isArray(quoteData?.inclusion?.inclusions)) {
         setInclusions(quoteData.inclusion.inclusions);
       }
-      if (typeof quoteData.inclusion.visaAmount !== 'undefined') {
+      if (typeof quoteData?.inclusion?.visaAmount !== 'undefined') {
         setVisaAmount(quoteData.inclusion.visaAmount);
+      }
+      if (typeof quoteData?.inclusion?.customVisaCount !== 'undefined') {
+        setCustomVisaCount(quoteData.inclusion.customVisaCount);
+      } else {
+        // default to pax when not present
+        setCustomVisaCount(Number(quoteData?.basic?.pax || 0));
       }
     }
   }, [syncWithStore]);
@@ -41,30 +53,77 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
   // sync to store when in edit mode and local state changes
   useEffect(() => {
     if (syncWithStore) {
-      const hasVisa = inclusions.some((item) => item.toLowerCase().includes("visa"));
       const pax = Number(quoteData?.basic?.pax || 1);
 
-      // If Visa present: POSITIVE 2000*pax, If NOT: NEGATIVE 1500*pax
+      // Visa calculation driven by customVisaCount (preferred) — fallback: if user kept a "visa" string, treat as all pax
+      const hasVisaString = inclusions.some((item) => String(item || "").toLowerCase().includes("visa"));
+      let calculatedVisaAmount;
+      if (customVisaCount > 0) {
+        const visaPeople = Math.min(customVisaCount, pax);
+        const nonVisaPeople = pax - visaPeople;
+        calculatedVisaAmount = (2000 * visaPeople) + (-1500 * nonVisaPeople);
+      } else if (hasVisaString) {
+        // user left a visa string but custom count is 0 — treat as all pax
+        calculatedVisaAmount = 2000 * pax;
+      } else {
+        calculatedVisaAmount = -1500 * pax;
+      }
+
+      // Persist inclusions without any raw 'visa' strings to avoid duplication — visa is represented by customVisaCount
+      const normalizedInclusions = inclusions.filter((it) => !String(it || "").toLowerCase().includes("visa"));
+
       updateStepData("inclusion", { 
-        inclusions, 
-        visaAmount: hasVisa ? 2000 * pax : -1500 * pax 
+        inclusions: normalizedInclusions, 
+        customVisaCount,
+        visaAmount: calculatedVisaAmount,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inclusions, syncWithStore, quoteData?.basic?.pax]);
+  }, [inclusions, customVisaCount, syncWithStore, quoteData?.basic?.pax]);
+
+  // UI-only: derived visa inclusion/exclusion strings to show immediately when customVisaCount changes
+  const pax = Number(quoteData?.basic?.pax || 1);
+  let visaIncludeString = null;
+  let visaExcludeString = null;
+  if (typeof customVisaCount === 'number') {
+    if (customVisaCount === pax) {
+      visaIncludeString = "Visa included";
+      visaExcludeString = null;
+    } else if (customVisaCount === 0) {
+      visaIncludeString = null;
+      visaExcludeString = `Visa not included for ${pax} person(s)`;
+    } else if (customVisaCount > 0 && customVisaCount < pax) {
+      visaIncludeString = `Visa included for ${customVisaCount} person(s)`;
+      visaExcludeString = `Visa not included for ${pax - customVisaCount} person(s)`;
+    }
+  }
 
   const handleNext = () => {
-    const hasVisa = inclusions.some((item) => item.toLowerCase().includes("visa"));
     const pax = Number(quoteData?.basic?.pax || 1);
+    const hasVisaString = inclusions.some((item) => String(item || "").toLowerCase().includes("visa"));
+    let calculatedVisaAmount;
+    if (customVisaCount > 0) {
+      const visaPeople = Math.min(customVisaCount, pax);
+      const nonVisaPeople = pax - visaPeople;
+      calculatedVisaAmount = (2000 * visaPeople) + (-1500 * nonVisaPeople);
+    } else if (hasVisaString) {
+      calculatedVisaAmount = 2000 * pax;
+    } else {
+      calculatedVisaAmount = -1500 * pax;
+    }
+
+    const normalizedInclusions = inclusions.filter((it) => !String(it || "").toLowerCase().includes("visa"));
 
     updateStepData("inclusion", {
-      inclusions,
-      visaAmount: hasVisa ? 2000 * pax : -1500 * pax,
+      inclusions: normalizedInclusions,
+      customVisaCount,
+      visaAmount: calculatedVisaAmount,
     });
 
     console.log("Updated inclusion data:", {
-      inclusions,
-      visaAmount: hasVisa ? 2000 * pax : -1500 * pax,
+      inclusions: normalizedInclusions,
+      customVisaCount,
+      visaAmount: calculatedVisaAmount,
     });
 
     onNext();
@@ -104,7 +163,7 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
 
       {/* List Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {inclusions.map((item, index) => (
+        {inclusions.filter(it => !String(it || "").toLowerCase().includes("visa")).map((item, index) => (
           <div
             key={index}
             className="flex justify-between items-center bg-white/10 rounded-xl p-3 hover:bg-white/20 transition"
@@ -141,7 +200,22 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
             </div>
           </div>
         ))}
+
+        {/* UI-only visa inclusion string (not persisted) */}
+        {visaIncludeString && (
+          <div className="flex justify-between items-center bg-white/6 rounded-xl p-3 opacity-95">
+            <p className="text-cyan-200">{visaIncludeString}</p>
+          </div>
+        )}
       </div>
+
+      {/* UI-only Exclusions display for visa if applicable (not persisted) */}
+      {visaExcludeString && (
+        <div className="mt-4 p-3 bg-amber-800/10 rounded-xl border border-amber-700/20">
+          <h4 className="text-sm font-semibold text-amber-300 mb-2">Exclusions</h4>
+          <div className="text-sm text-amber-200">• {visaExcludeString}</div>
+        </div>
+      )}
 
       {/* ➕ Add New Inclusion */}
       <div className="mt-6">
@@ -179,6 +253,44 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
           </div>
         )}
       </div>
+
+      {/* Custom Visa Count UI */}
+      <div className="mt-6 p-4 bg-white/5 rounded-xl border border-cyan-400/30">
+          <h3 className="text-lg font-semibold mb-3 text-cyan-400">Visa Configuration</h3>
+          <div className="flex flex-col gap-3">
+            <label className="text-sm text-gray-300">
+              How many people need visa? (Out of {quoteData?.basic?.pax || 1} pax)
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="number"
+                min="0"
+                max={quoteData?.basic?.pax || 1}
+                value={customVisaCount}
+                onChange={(e) => setCustomVisaCount(Math.max(0, Math.min(Number(e.target.value) || 0, quoteData?.basic?.pax || 1)))}
+                className="w-24 bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-400"
+              />
+              <span className="text-sm text-gray-400">people</span>
+            </div>
+            {customVisaCount > 0 && (
+              <div className="text-sm text-cyan-300 mt-2 p-2 bg-cyan-400/10 rounded">
+                ✓ {customVisaCount} person(s) with visa: +₹{(2000 * customVisaCount).toLocaleString('en-IN')}
+                {customVisaCount < (quoteData?.basic?.pax || 1) && (
+                  <>
+                    <br />
+                    ✓ {(quoteData?.basic?.pax || 1) - customVisaCount} person(s) without visa: -₹{(1500 * ((quoteData?.basic?.pax || 1) - customVisaCount)).toLocaleString('en-IN')}
+                  </>
+                )}
+              </div>
+            )}
+            {customVisaCount === 0 && (
+              <div className="text-sm text-amber-300 mt-2 p-2 bg-amber-400/10 rounded">
+                ℹ️ All {quoteData?.basic?.pax || 1} people without visa: -₹{(1500 * (quoteData?.basic?.pax || 1)).toLocaleString('en-IN')}
+              </div>
+            )}
+          </div>
+        </div>
+      
 
       {/* Navigation */}
       {showNav && (

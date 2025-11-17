@@ -48,7 +48,7 @@ export default function NewItenary(){
                          },
                     ],
                     meal: { meals: [{ type: "Breakfast", price: 0 }], totalPrice: 0 },
-                    inclusion: { inclusions: ["4 nights accommodation in 4★ hotel", "Visa", "All Transfers", "Half-day Muscat city tour – Qurum Beach, Opera House (outside), Mutrah Souq, Mutrah Fort", "Full-day Nizwa tour – Nizwa Fort, Nizwa Souq", "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Fins Beach"], visaAmount: 0 },
+                    inclusion: { inclusions: ["4 nights accommodation in 4★ hotel", "All Transfers", "Half-day Muscat city tour – Qurum Beach, Opera House (outside), Mutrah Souq, Mutrah Fort", "Full-day Nizwa tour – Nizwa Fort, Nizwa Souq", "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Fins Beach"], visaAmount: 0, customVisaCount: 1 },
                     exclusion: { exclusions: ["Airfare", "Lunch & Dinner", "Personal expense (Tips, Laundry, Beverage, etc.)", "Early check-in / Late checkout", "GST @5% & TCS @5% as per applicable travel cost"] },
                     totals: {
                          mainTotal: 0,

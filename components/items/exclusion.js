@@ -67,6 +67,9 @@ export default function Exclusion({ onNext = () => {}, onBack = () => {}, syncWi
     setIsAdding(false);
   };
 
+
+   
+
   return (
     <div className="w-full bg-black text-white rounded-2xl p-6 shadow-lg border border-white/10">
       <h2 className="text-2xl font-semibold mb-4 text-cyan-400">

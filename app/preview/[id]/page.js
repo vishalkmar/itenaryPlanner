@@ -251,20 +251,50 @@ export default function QuotePreviewPage() {
             <div className="p-6">
               {quote.inclusion?.inclusions && quote.inclusion.inclusions.length > 0 ? (
                 <ul className="space-y-2">
-                  {quote.inclusion.inclusions.map((inc, i) => (
-                    <li key={i} className="flex items-start gap-2 text-gray-200">
-                      <span className="text-green-400 font-bold mt-0.5">•</span>
-                      <span>{inc}</span>
-                    </li>
+                  {quote.inclusion.inclusions
+                    .filter((inc) => !String(inc || "").toLowerCase().includes("visa"))
+                    .map((inc, i) => (
+                      <li key={i} className="flex items-start gap-2 text-gray-200">
+                        <span className="text-green-400 font-bold mt-0.5">•</span>
+                        <span>{inc}</span>
+                      </li>
                   ))}
+
+                  {/* If customVisaCount > 0, show an inclusion string describing the included visas */}
+                  {quote.inclusion?.customVisaCount > 0 && (
+                    <li className="flex items-start gap-2 text-gray-200">
+                      <span className="text-green-400 font-bold mt-0.5">•</span>
+                      <span>Visa included for {quote.inclusion.customVisaCount} person(s)</span>
+                    </li>
+                  )}
                 </ul>
               ) : (
                 <p className="text-center text-gray-400 py-4">No inclusions added</p>
               )}
               {quote.inclusion?.visaAmount !== undefined && (
                 <div className="mt-4 pt-4 border-t border-white/10">
-                  <p className="text-gray-400 text-xs">Visa Amount</p>
-                  <p className="text-lg font-bold text-emerald-400">INR {Number(quote.inclusion.visaAmount||0).toLocaleString()}</p>
+                  {quote.inclusion?.customVisaCount > 0 && quote.basic?.pax > quote.inclusion.customVisaCount && (
+                    <>
+                      <p className="text-gray-400 text-xs mb-2">Visa Breakdown</p>
+                      <div className="text-sm space-y-1 mb-3">
+                        <div className="flex justify-between">
+                          <span className="text-green-300">✓ {quote.inclusion.customVisaCount} person(s) with visa:</span>
+                          <span className="text-green-400 font-semibold">+INR {Number(2000 * quote.inclusion.customVisaCount).toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-red-300">✗ {quote.basic.pax - quote.inclusion.customVisaCount} person(s) without visa:</span>
+                          <span className="text-red-400 font-semibold">-INR {Number(1500 * (quote.basic.pax - quote.inclusion.customVisaCount)).toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {quote.inclusion?.customVisaCount === 0 && (
+                    <p className="text-gray-400 text-xs mb-2">Visa Amount (All without visa):</p>
+                  )}
+                  {quote.inclusion?.customVisaCount === quote.basic?.pax && (
+                    <p className="text-gray-400 text-xs mb-2">Visa Amount (All with visa):</p>
+                  )}
+                  <p className="text-lg font-bold text-emerald-400">INR {Number(quote.inclusion.visaAmount||0).toLocaleString('en-IN')}</p>
                 </div>
               )}
             </div>
@@ -276,18 +306,28 @@ export default function QuotePreviewPage() {
               <h3 className="text-lg font-bold text-red-400">❌ Exclusions</h3>
             </div>
             <div className="p-6">
-              {quote.exclusion?.exclusions && quote.exclusion.exclusions.length > 0 ? (
-                <ul className="space-y-2">
-                  {quote.exclusion.exclusions.map((ex, i) => (
-                    <li key={i} className="flex items-start gap-2 text-gray-200">
-                      <span className="text-red-400 font-bold mt-0.5">•</span>
-                      <span>{ex}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-center text-gray-400 py-4">No exclusions added</p>
-              )}
+              {
+                (quote.exclusion?.exclusions && quote.exclusion.exclusions.length > 0) || (quote.inclusion?.customVisaCount < (quote.basic?.pax || 0)) ? (
+                  <ul className="space-y-2">
+                    {(quote.exclusion?.exclusions || []).map((ex, i) => (
+                      <li key={i} className="flex items-start gap-2 text-gray-200">
+                        <span className="text-red-400 font-bold mt-0.5">•</span>
+                        <span>{ex}</span>
+                      </li>
+                    ))}
+
+                    {/* If some pax are without visa, show exclusion line */}
+                    {quote.inclusion?.customVisaCount < (quote.basic?.pax || 0) && (
+                      <li className="flex items-start gap-2 text-gray-200">
+                        <span className="text-red-400 font-bold mt-0.5">•</span>
+                        <span>Visa not included for {((quote.basic?.pax || 0) - (quote.inclusion?.customVisaCount || 0))} person(s)</span>
+                      </li>
+                    )}
+                  </ul>
+                ) : (
+                  <p className="text-center text-gray-400 py-4">No exclusions added</p>
+                )
+              }
             </div>
           </div>
         </section>
