@@ -25,8 +25,15 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
   const [visaAmount, setVisaAmount] = useState(0); // default 0 if Visa present
   const [customVisaCount, setCustomVisaCount] = useState(() => {
     if (quoteData?.inclusion?.customVisaCount !== undefined) return quoteData.inclusion.customVisaCount;
+    if (quoteData?.totals?.customVisaCount !== undefined) return quoteData.totals.customVisaCount;
     return Number(quoteData?.basic?.pax || 0);
   }); // number of people with visa (default to pax)
+  // explicit list of passenger indexes (1-based) who have visa
+  const [visaPassengers, setVisaPassengers] = useState(() => {
+    if (Array.isArray(quoteData?.inclusion?.visaPassengers)) return quoteData.inclusion.visaPassengers;
+    if (Array.isArray(quoteData?.totals?.visaPassengers)) return quoteData.totals.visaPassengers;
+    return [];
+  });
 
   const { updateStepData } = useQuoteStore();
 
@@ -38,17 +45,49 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
       if (Array.isArray(quoteData?.inclusion?.inclusions)) {
         setInclusions(quoteData.inclusion.inclusions);
       }
-      if (typeof quoteData?.inclusion?.visaAmount !== 'undefined') {
+      // Prefer inclusion.visaAmount, fallback to totals.visaAmount
+      if (typeof quoteData?.inclusion?.visaAmount === 'number') {
         setVisaAmount(quoteData.inclusion.visaAmount);
+      } else if (typeof quoteData?.totals?.visaAmount === 'number') {
+        setVisaAmount(quoteData.totals.visaAmount);
       }
-      if (typeof quoteData?.inclusion?.customVisaCount !== 'undefined') {
+
+      // Prefer inclusion.customVisaCount, then totals.customVisaCount, else default to pax
+      if (typeof quoteData?.inclusion?.customVisaCount === 'number') {
         setCustomVisaCount(quoteData.inclusion.customVisaCount);
+      } else if (typeof quoteData?.totals?.customVisaCount === 'number') {
+        setCustomVisaCount(quoteData.totals.customVisaCount);
       } else {
-        // default to pax when not present
         setCustomVisaCount(Number(quoteData?.basic?.pax || 0));
       }
     }
   }, [syncWithStore]);
+
+  // Ensure component auto-populates when quoteData is fetched (edit mode/load)
+  useEffect(() => {
+    if (!quoteData) return;
+
+    // populate inclusions if incoming data has them
+    if (Array.isArray(quoteData?.inclusion?.inclusions)) {
+      setInclusions(quoteData.inclusion.inclusions);
+    }
+
+    // populate visa amount: prefer inclusion.visaAmount then totals.visaAmount
+    if (typeof quoteData?.inclusion?.visaAmount === 'number') {
+      setVisaAmount(quoteData.inclusion.visaAmount);
+    } else if (typeof quoteData?.totals?.visaAmount === 'number') {
+      setVisaAmount(quoteData.totals.visaAmount);
+    }
+
+    // populate customVisaCount: prefer inclusion.customVisaCount, then totals.customVisaCount, else default to pax
+    const incomingCount = (typeof quoteData?.inclusion?.customVisaCount === 'number')
+      ? quoteData.inclusion.customVisaCount
+      : (typeof quoteData?.totals?.customVisaCount === 'number' ? quoteData.totals.customVisaCount : Number(quoteData?.basic?.pax || 0));
+
+    if (typeof incomingCount === 'number') {
+      setCustomVisaCount(incomingCount);
+    }
+  }, [quoteData]);
 
   // sync to store when in edit mode and local state changes
   useEffect(() => {
@@ -76,6 +115,7 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
         inclusions: normalizedInclusions, 
         customVisaCount,
         visaAmount: calculatedVisaAmount,
+        visaPassengers,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,7 +158,8 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
       inclusions: normalizedInclusions,
       customVisaCount,
       visaAmount: calculatedVisaAmount,
-    });
+      visaPassengers,
+    });  
 
     console.log("Updated inclusion data:", {
       inclusions: normalizedInclusions,

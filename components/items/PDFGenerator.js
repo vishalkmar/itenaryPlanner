@@ -373,18 +373,15 @@ function generatePDFHTML(quote) {
             <div class="info-grid">
               <div class="info-item">
                 <div class="info-label">✓ With Visa</div>
-                <div class="info-value">${inclusion.customVisaCount} person(s) @ ₹2,000 each = ₹${Number(2000 * inclusion.customVisaCount).toLocaleString('en-IN')}</div>
+                <div class="info-value">${inclusion.customVisaCount} person(s) </div>
               </div>
               <div class="info-item">
                 <div class="info-label">✗ Without Visa</div>
-                <div class="info-value">${basic.pax - inclusion.customVisaCount} person(s) @ ₹1,500 each = ₹${Number(1500 * (basic.pax - inclusion.customVisaCount)).toLocaleString('en-IN')}</div>
+                <div class="info-value">${basic.pax - inclusion.customVisaCount} person(s) </div>
               </div>
             </div>
             <div class="info-grid" style="margin-top: 8px; border-top: 1px solid #ddd; padding-top: 8px;">
-              <div class="info-item">
-                <div class="info-label" style="font-weight: bold;">Net Visa Amount</div>
-                <div class="info-value" style="font-weight: bold; color: #0066cc;">₹${Number(inclusion.visaAmount || 0).toLocaleString('en-IN')}</div>
-              </div>
+              
             </div>
             ` : `
             <div class="info-grid">
