@@ -8,7 +8,8 @@ export async function GET(request) {
     await dbConnect();
 
     // Fetch all quotes, lean (read-only) for performance
-    const quotes = await Quote.find({}).lean().sort({ createdAt: -1 });
+    // Sort by `updatedAt` (most recently edited first). Fallback to createdAt order.
+    const quotes = await Quote.find({}).lean().sort({ updatedAt: -1, createdAt: -1 });
 
     return NextResponse.json(
       { success: true, count: quotes.length, data: quotes },

@@ -93,6 +93,7 @@ export default function DashboardPage() {
                   <th className="p-3 text-left">Place</th>
                   <th className="p-3 text-left">Per Person Price (₹)</th>
                   <th className="p-3 text-left hidden lg:table-cell">Created</th>
+                  <th className="p-3 text-left hidden lg:table-cell">Updated</th>
                   <th className="p-3 text-center">Actions</th>
                 </tr>
               </thead>
@@ -110,7 +111,34 @@ export default function DashboardPage() {
                     </td>
                     <td className="p-3 truncate max-w-xs">{quote.accommodation && quote.accommodation.length ? (quote.accommodation[0].place || quote.accommodation[0].otherPlace || "-") : "-"}</td>
                     <td className="p-3 font-semibold text-emerald-400">{quote.totals?.pricePerPerson?.toLocaleString() ?? "—"}</td>
-                    <td className="p-3 text-xs hidden lg:table-cell text-gray-400">{quote.createdAt ? new Date(quote.createdAt).toLocaleDateString() : "—"}</td>
+                    <td className="p-3 text-xs hidden lg:table-cell text-gray-400">
+                      {quote.createdAt ? (
+                        <div>
+                          <div>{new Date(quote.createdAt).toLocaleDateString()}</div>
+                          <div className="text-gray-500 text-[11px]">{new Date(quote.createdAt).toLocaleTimeString()}</div>
+                        </div>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td className="p-3 text-xs hidden lg:table-cell text-gray-400">
+                      {quote.updatedAt ? (
+                        <div>
+                          <div>{new Date(quote.updatedAt).toLocaleDateString()}</div>
+                          <div className="text-gray-500 text-[11px]">{new Date(quote.updatedAt).toLocaleTimeString()}</div>
+                        </div>
+                      ) : (
+                        // fallback to createdAt if updatedAt missing
+                        quote.createdAt ? (
+                          <div>
+                            <div>{new Date(quote.createdAt).toLocaleDateString()}</div>
+                            <div className="text-gray-500 text-[11px]">{new Date(quote.createdAt).toLocaleTimeString()}</div>
+                          </div>
+                        ) : (
+                          "—"
+                        )
+                      )}
+                    </td>
                     <td className="p-3 text-center flex justify-center gap-2">
                       {/* View */}
                       <Link

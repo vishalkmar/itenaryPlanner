@@ -138,7 +138,10 @@ export async function PATCH(request, { params }) {
     q.inclusion.visaAmount = visaAmount;
     q.inclusion.customVisaCount = customVisaCount;
 
-    const updated = await Quote.findByIdAndUpdate(id, q, { new: true });
+    // Ensure updatedAt reflects this edit so lists sorted by updatedAt are accurate
+    q.updatedAt = new Date();
+
+    const updated = await Quote.findByIdAndUpdate(id, q, { new: true, runValidators: true });
     if (!updated) return NextResponse.json({ success: false, error: "Quote not found" }, { status: 404 });
 
     return NextResponse.json(
