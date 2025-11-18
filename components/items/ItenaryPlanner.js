@@ -82,18 +82,25 @@ export default function ItineraryPlanner({
 
   const [days, setDays] = useState(() =>
     quoteData?.itinerary?.days && Array.isArray(quoteData.itinerary.days) && quoteData.itinerary.days.length
-      ? quoteData.itinerary.days.map(day => ({
-        ...day,
-        descriptionList: day.descriptionList || [],
-        showOtherInput: false,
-        otherText: "",
-        // --- NEW: set qty 0 if should show qty
-        activities: (day.activities || []).map(a =>
-          shouldShowQtyBox(a.value)
-            ? { ...a, qty: a.qty !== undefined ? a.qty : 0 }
-            : a
-        ),
-      }))
+      ? quoteData.itinerary.days.map(day => {
+        // Parse description string back into descriptionList array if needed
+        let descriptionList = day.descriptionList || [];
+        if (day.description && (!descriptionList || descriptionList.length === 0)) {
+          descriptionList = day.description.split("\n").filter(d => d.trim());
+        }
+        return {
+          ...day,
+          descriptionList,
+          showOtherInput: false,
+          otherText: "",
+          // --- NEW: set qty 0 if should show qty
+          activities: (day.activities || []).map(a =>
+            shouldShowQtyBox(a.value)
+              ? { ...a, qty: a.qty !== undefined ? a.qty : 0 }
+              : a
+          ),
+        };
+      })
       : [{
         id: 1,
         title: "Day 1",

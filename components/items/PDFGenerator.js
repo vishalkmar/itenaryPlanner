@@ -375,18 +375,12 @@ function generatePDFHTML(quote) {
         <!-- Visa Breakdown (if custom visa count) -->
         ${inclusion.customVisaCount !== undefined ? `
         <div class="section">
-          <div class="section-header">VISA DETAILS</div>
+        
           <div class="section-content">
             ${inclusion.customVisaCount > 0 && basic.pax > inclusion.customVisaCount ? `
             <div class="info-grid">
-              <div class="info-item">
-                <div class="info-label">✓ With Visa</div>
-                <div class="info-value">${inclusion.customVisaCount} person(s) </div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">✗ Without Visa</div>
-                <div class="info-value">${basic.pax - inclusion.customVisaCount} person(s) </div>
-              </div>
+            
+              
             </div>
             <div class="info-grid" style="margin-top: 8px; border-top: 1px solid #ddd; padding-top: 8px;">
               
