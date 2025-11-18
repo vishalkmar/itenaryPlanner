@@ -180,7 +180,7 @@ function generatePDFHTML(quote) {
   ];
 
   // Hardcode Breakfast as included (do not list other meals here)
-  inclusionsWithMeals.push("Meals: Breakfast");
+  // inclusionsWithMeals.push("Meals: Breakfast");
 
   // Add conditional visa inclusion string based on customVisaCount
   if (typeof inclusion?.customVisaCount === 'number') {

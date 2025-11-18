@@ -57,6 +57,12 @@ const descriptionOptions = [
 { value: "Return to Muscat", label: "Return to Muscat" },
 
   { value: "Relex at Hotel", label: "Relex at Hotel" },
+
+  { value: "Dolphine Watching", label: "Dolphine Watching" },
+  { value: "Wahiba Sands", label: "Wahiba Sands" },
+  { value: "Wadi Bani Khalid", label: "Wadi Bani Khalid" },
+
+
   { value: "Breakfast at Hotel", label: "Breakfast at Hotel" },
   { value: "Return to Hotel and overnight stay", label: "Return to Hotel and overnight stay" },
   { value: "Drop back to hotel and overnight stay", label: "Drop back to hotel and overnight stay" },
