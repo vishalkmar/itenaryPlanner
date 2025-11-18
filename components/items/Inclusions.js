@@ -5,11 +5,12 @@ import useQuoteStore from "./ItenaryStore";
 
 export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWithStore = false, showNav = true }) {
   const defaultInclusions = [
-    "4 nights accommodation in 4★ hotel",
+    "Accommodation in 4★ hotel",
     "All Transfers",
     "Half-day Muscat city tour – Qurum Beach, Opera House (outside), Mutrah Souq, Mutrah Fort",
     "Full-day Nizwa tour – Nizwa Fort, Nizwa Souq",
     "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Widi Tiwi",
+    "Breakfast"
   ];
 
  
