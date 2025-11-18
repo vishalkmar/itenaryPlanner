@@ -219,6 +219,17 @@ function generatePDFHTML(quote) {
     .join("");
 
   // HTML template no changes from your provided code, keep as is.
+  // Compute totals and per-person breakdowns
+  const paxCount = Number(basic?.pax || 1);
+  const grandTotal = Number(totals?.grandTotal || 0); // before GST/TCS
+  const gstAmount = Number(totals?.gstAmount || 0);
+  const tcsAmount = Number(totals?.tcsAmount || 0);
+  const finalTotal = Number(totals?.finalTotal || totals?.grandTotal || 0);
+  const preTaxPerPerson = paxCount > 0 ? grandTotal / paxCount : grandTotal;
+  const gstPerPerson = paxCount > 0 ? gstAmount / paxCount : gstAmount;
+  const tcsPerPerson = paxCount > 0 ? tcsAmount / paxCount : tcsAmount;
+  const finalPerPerson = Number(totals?.pricePerPerson || (finalTotal / (paxCount || 1)));
+
   const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -260,6 +271,17 @@ function generatePDFHTML(quote) {
         .total-box { background: #e8f2ff; border: 2px solid #0066cc; padding: 15px; text-align: right; margin: 15px 0; border-radius: 4px; }
         .total-label { font-size: 12px; color: #666; margin-bottom: 5px; }
         .total-value { color: #0066cc; font-size: 20px; font-weight: bold; }
+
+        /* New styled price breakdown */
+        .price-breakdown { background: linear-gradient(180deg, #ffffff 0%, #f4fbff 100%); border: 1px solid #d7eefc; padding: 18px; border-radius: 8px; margin: 12px 0; }
+        .price-row { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
+        .price-row .label { color:#333; font-size:13px; }
+        .price-row .value { color:#0066cc; font-weight:700; font-size:14px; }
+        .pre-tax-title { font-size:18px; font-weight:700; color:#223; }
+        .tax-note { font-size:12px; color:#555; }
+        .final-row { display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:12px; border-top:1px solid #e6f1fb; }
+        .final-row .label { font-size:18px; font-weight:800; color:#222; }
+        .final-row .value { font-size:24px; font-weight:900; color:#004a9f; }
         .footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 10px; color: #666; line-height: 1.6; }
         .company-info { margin-bottom: 10px; }
         /* Table styles for itinerary */
@@ -374,15 +396,24 @@ function generatePDFHTML(quote) {
 
       
         <div class="section">
-          <div class="total-box">
-           
-            <div class="total-label" style="font-size:1rem;" >PRICE PER PERSON</div>
-             ${totals.applyGstTcs ? `
-            <div class="total-label" style="padding: 8px; font-size:1rem; margin: -15px -15px 10px -15px; border-radius: 4px 4px 0 0; font-size: 11px;">
-              ✓  GST @5% & TCS @5% as per applicable travel cost
+          <div class="price-breakdown">
+            ${totals.applyGstTcs ? `
+            <div class="price-row">
+              <div class="label pre-tax-title">Package Without Taxes</div>
+              <div class="value">₹ ${Number(preTaxPerPerson || 0).toLocaleString("en-IN", {maximumFractionDigits:2})}</div>
             </div>
-            ` : ""}
-            <div class="total-value">₹ ${Number(totals.pricePerPerson || 0).toLocaleString("en-IN")}</div>
+            <div class="price-row">
+              <div class="label tax-note">GST @5% & TCS @5% as per applicable travel cost</div>
+            
+            </div>
+            ` : `
+           
+            `}
+
+            <div class="final-row">
+              <div class="label">Final Price per person</div>
+              <div class="value">₹ ${Number(finalPerPerson || 0).toLocaleString("en-IN", {maximumFractionDigits:2})}</div>
+            </div>
           </div>
         </div>
 
