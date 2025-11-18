@@ -223,11 +223,29 @@ export default function QuotePreviewPage() {
           </div>
           <div className="p-6">
             {quote.meal?.meals && quote.meal.meals.length > 0 ? (
-              <div className="space-y-2 mb-4">
+              <div className="space-y-3 mb-4">
                 {quote.meal.meals.map((m, i) => (
-                  <div key={i} className="flex justify-between items-center bg-black/30 p-3 rounded border border-white/10 hover:border-pink-500/50 transition">
-                    <span className="text-gray-200">{m.type}</span>
-                    <span className="font-semibold text-emerald-400">INR {Number(m.price||0).toLocaleString()}</span>
+                  <div key={i} className="bg-black/30 p-4 rounded border border-white/10 hover:border-pink-500/50 transition">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="text-lg font-bold text-pink-300">{m.type}</h4>
+                      <span className="font-semibold text-emerald-400">INR {Number(m.price||0).toLocaleString()}</span>
+                    </div>
+                    {(m.days || m.costumePax) && (
+                      <div className="grid grid-cols-3 gap-2 text-xs bg-white/5 rounded p-2 mt-2">
+                        <div>
+                          <p className="text-gray-400">Days</p>
+                          <p className="text-gray-200 font-semibold">{m.days || 0}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Costume Pax</p>
+                          <p className="text-gray-200 font-semibold">{m.costumePax || 0}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Calculation</p>
+                          <p className="text-cyan-300 font-semibold text-xs">₹1500 × {m.costumePax || 0} × {m.days || 0}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

@@ -21,7 +21,12 @@ const AccommodationZ = z.object({
   totalPrice: z.number().optional().default(),
 });
 
-const MealItemZ = z.object({ type: z.string().optional(), price: z.number().optional().default(0) });
+const MealItemZ = z.object({
+  type: z.string().optional(),
+  price: z.number().optional().default(0),
+  days: z.number().optional().default(0),
+  costumePax: z.number().optional().default(0),
+});
 
 const BasicZ = z.object({
   startDate: z.string().optional(),

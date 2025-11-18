@@ -46,6 +46,8 @@ const MealSchema = new mongoose.Schema(
   {
     type: { type: String },
     price: { type: Number, default: 0 },
+    days: { type: Number, default: 0 },
+    costumePax: { type: Number, default: 0 },
   },
   { _id: false }
 );

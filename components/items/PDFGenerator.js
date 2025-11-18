@@ -197,8 +197,16 @@ function generatePDFHTML(quote) {
 
   // Exclusions list (append visa-not-included line if some pax are without visa)
   const exclusionsArr = exclusion.exclusions || [];
+  // Do not list lunch/dinner in exclusions if they are included in meals
+  const mealTypes = (meal?.meals || []).map(m => String(m?.type || '').toLowerCase().trim());
+  const exclusionsFiltered = exclusionsArr.filter((ex) => {
+    const t = String(ex || '').toLowerCase();
+    if (t.includes('lunch') && mealTypes.includes('lunch')) return false;
+    if (t.includes('dinner') && mealTypes.includes('dinner')) return false;
+    return true;
+  });
   const visaExcludedCount = (inclusion?.customVisaCount !== undefined && basic?.pax !== undefined) ? (basic.pax - (inclusion.customVisaCount || 0)) : 0;
-  const exclusionsWithVisa = [...exclusionsArr];
+  const exclusionsWithVisa = [...exclusionsFiltered];
   if (visaExcludedCount > 0) {
     if (visaExcludedCount === basic.pax) {
       exclusionsWithVisa.push("Visa not included");
