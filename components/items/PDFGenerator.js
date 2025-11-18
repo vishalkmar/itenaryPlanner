@@ -372,31 +372,7 @@ function generatePDFHTML(quote) {
         </div>
         ` : ""}
 
-        <!-- Visa Breakdown (if custom visa count) -->
-        ${inclusion.customVisaCount !== undefined ? `
-        <div class="section">
-        
-          <div class="section-content">
-            ${inclusion.customVisaCount > 0 && basic.pax > inclusion.customVisaCount ? `
-            <div class="info-grid">
-            
-              
-            </div>
-            <div class="info-grid" style="margin-top: 8px; border-top: 1px solid #ddd; padding-top: 8px;">
-              
-            </div>
-            ` : `
-            <div class="info-grid">
-              <div class="info-item">
-                <div class="info-label">All ${basic.pax} Person(s) ${inclusion.customVisaCount === basic.pax ? "With Visa" : "Without Visa"}</div>
-                <div class="info-value">₹${Number(inclusion.visaAmount || 0).toLocaleString('en-IN')}</div>
-              </div>
-            </div>
-            `}
-          </div>
-        </div>
-        ` : ""}
-
+      
         <div class="section">
           <div class="total-box">
            
