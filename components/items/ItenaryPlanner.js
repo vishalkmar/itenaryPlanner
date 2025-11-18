@@ -94,9 +94,16 @@ export default function ItineraryPlanner({
         if (day.description && (!descriptionList || descriptionList.length === 0)) {
           descriptionList = day.description.split("\n").filter(d => d.trim());
         }
+        // derive activity auto descriptions from activities if present
+        const activityAutoDescriptions = (day.activities || []).map(a => a.label).filter(Boolean);
+        // ensure descriptionList includes manual entries + auto ones (manual first)
+        const manualDescriptions = (descriptionList || []).filter(d => !activityAutoDescriptions.includes(d));
+        const mergedDescriptions = [...manualDescriptions, ...activityAutoDescriptions];
+
         return {
           ...day,
-          descriptionList,
+          descriptionList: mergedDescriptions,
+          activityAutoDescriptions,
           showOtherInput: false,
           otherText: "",
           // --- NEW: set qty 0 if should show qty
@@ -112,6 +119,7 @@ export default function ItineraryPlanner({
         title: "Day 1",
         description: "",
         descriptionList: [],
+        activityAutoDescriptions: [],
         showOtherInput: false,
         otherText: "",
         activities: [],
@@ -168,7 +176,8 @@ export default function ItineraryPlanner({
         id: prevDays.length + 1,
         title: `Day ${prevDays.length + 1}`,
         description: "",
-        descriptionList: [],
+          descriptionList: [],
+          activityAutoDescriptions: [],
         showOtherInput: false,
         otherText: "",
         activities: [],
@@ -200,9 +209,11 @@ export default function ItineraryPlanner({
         }
         if (day.descriptionList.includes(selectedOption.value)) return day;
         const updatedList = [...day.descriptionList, selectedOption.value];
+        const updatedAuto = day.activityAutoDescriptions || [];
         return {
           ...day,
           descriptionList: updatedList,
+          activityAutoDescriptions: updatedAuto,
           description: updatedList.join("\n"),
           showOtherInput: false
         };
@@ -278,7 +289,14 @@ export default function ItineraryPlanner({
             };
           })
           : [];
-        return { ...day, activities: selectedActivities };
+        // Build activity-auto descriptions (labels only, without price)
+        const newAuto = selectedActivities.map(a => a.label).filter(Boolean);
+        // Preserve manual descriptions (those not created by previous auto list)
+        const prevAuto = day.activityAutoDescriptions || [];
+        const manualDescriptions = (day.descriptionList || []).filter(d => !prevAuto.includes(d));
+        const mergedDescriptions = [...manualDescriptions, ...newAuto];
+
+        return { ...day, activities: selectedActivities, activityAutoDescriptions: newAuto, descriptionList: mergedDescriptions, description: mergedDescriptions.join("\n") };
       })
     );
   };
@@ -416,16 +434,21 @@ export default function ItineraryPlanner({
                 {day.descriptionList.length === 0 && (
                   <span className="text-gray-400 text-sm">No description items added.</span>
                 )}
-                {day.descriptionList.map((desc, idx) => (
-                  <div key={idx} className="bg-cyan-700/70 text-white py-1 px-3 rounded flex items-center gap-1">
-                    <span>{desc}</span>
-                    <button
-                      type="button"
-                      className="ml-1 text-red-400 hover:text-red-200"
-                      onClick={() => handleRemoveDesc(desc, day.id)}
-                    ><X size={14} /></button>
-                  </div>
-                ))}
+                {day.descriptionList.map((desc, idx) => {
+                  const isAuto = (day.activityAutoDescriptions || []).includes(desc);
+                  return (
+                    <div key={idx} className="bg-cyan-700/70 text-white py-1 px-3 rounded flex items-center gap-1">
+                      <span>{desc}</span>
+                      {!isAuto && (
+                        <button
+                          type="button"
+                          className="ml-1 text-red-400 hover:text-red-200"
+                          onClick={() => handleRemoveDesc(desc, day.id)}
+                        ><X size={14} /></button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               {/* Activities */}
               <label className="block mb-2 text-sm font-semibold">
