@@ -415,6 +415,17 @@ export default function QuotePreviewPage() {
             </div>
           </div>
         </section>
+        {/* Remark (optional) */}
+        {quote.remark && String(quote.remark).trim() && (
+          <section className="my-8"> 
+            <div className="bg-gradient-to-r from-emerald-600 to-cyan-600 p-4 rounded-t px-4 py-2">
+              <h3 className="text-lg font-bold text-yellow-700">📝 Remark</h3>
+            </div>
+            <div className=" bg-to-blue-500 border  rounded-b px-4 py-4">
+              <p className="text-white-900 whitespace-pre-wrap text-base">{quote.remark}</p>
+            </div>
+          </section>
+        )}
       </div>
     
     </div>

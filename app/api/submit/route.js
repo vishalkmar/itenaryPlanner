@@ -38,6 +38,7 @@ const BasicZ = z.object({
 const QuoteZ = z.object({
   itinerary: z.object({ selectedCategory: z.string().optional(), days: z.array(DayZ).optional(), totalActivityPrice: z.number().optional().default(0) }).optional(),
   accommodation: z.array(AccommodationZ).optional(),
+  remark: z.string().optional(),
   meal: z.object({ meals: z.array(MealItemZ).optional(), totalPrice: z.number().optional().default(0) }).optional(),
   inclusion: z.object({ inclusions: z.array(z.string()).optional(), visaAmount: z.number().optional().default(0), customVisaCount: z.number().optional().default(0) }).optional(),
   exclusion: z.object({ exclusions: z.array(z.string()).optional() }).optional(),
@@ -167,14 +168,16 @@ export async function POST(request) {
 
     const doc = await Quote.create(q);
 
-    console.log("✅ Successfully saved to DB. Saved doc.basic:", doc.basic, "doc.totals:", doc.totals);
+    // Convert to plain object to avoid mongoose document serialization issues
+    const out = doc && doc.toObject ? doc.toObject() : doc;
+    console.log("✅ Successfully saved to DB. Saved doc.remark:", out.remark, "doc.totals:", out.totals);
 
-    // ✅ Return full saved document
+    // ✅ Return full saved document (plain object)
     return NextResponse.json(
       {
         success: true,
         message: "Quote saved successfully",
-        data: doc, // full mongoose document
+        data: out,
       },
       { status: 201 }
     );

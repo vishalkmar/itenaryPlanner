@@ -67,6 +67,9 @@ const QuoteSchema = new mongoose.Schema(
       totalPrice: { type: Number, default: 0 },
     },
 
+    // optional free-form remark text for quote
+    remark: { type: String, default: "" },
+
     inclusion: {
       inclusions: { type: [String], default: [] },
       visaAmount: { type: Number, default: 0 },

@@ -417,19 +417,28 @@ function generatePDFHTML(quote) {
           </div>
         </div>
 
-        <div class="section">
-          <div class="section-header">BOOKING INFORMATION</div>
-          <div class="section-content">
-            <div class="company-info">
-              <strong>Booked and Payable By:</strong>
-              <div style="margin-top:4px; color:#555; font-size:11px;">
-                Traveon Venture LLP<br/>
-                128A D-MAIL, New Delhi<br/>
-                India 110034
+          ${quote.remark && String(quote.remark || '').trim() ? `
+          <div class="section" style="margin-top:18px;">
+            <div class="section-header">REMARK</div>
+            <div class="section-content" >
+              <div style="font-size:13px;  color:#555; white-space:pre-wrap; padding:10px 6px;">${String(quote.remark || '').replace(/\n/g, '<br/>')}</div>
+            </div>
+          </div>
+          ` : ''}
+
+          <div class="section">
+            <div class="section-header">BOOKING INFORMATION</div>
+            <div class="section-content">
+              <div class="company-info">
+                <strong>Booked and Payable By:</strong>
+                <div style="margin-top:4px; color:#555; font-size:11px;">
+                  Traveon Venture LLP<br/>
+                  128A D-MAIL, New Delhi<br/>
+                  India 110034
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
         <div class="section">
           <div class="section-header">IMPORTANT TERMS & CONDITIONS</div>

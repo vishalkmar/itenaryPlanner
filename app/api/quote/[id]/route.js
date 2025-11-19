@@ -13,6 +13,8 @@ export async function GET(request, { params }) {
     const doc = await Quote.findById(id).lean();
     if (!doc) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
 
+    // Debug: log remark to help trace missing remark issues
+    console.log(`/api/quote/${id} GET fetched remark:`, doc.remark);
     return NextResponse.json({ success: true, data: doc }, { status: 200 });
   } catch (err) {
     console.error("/api/quote/[id] GET error", err);
@@ -144,8 +146,11 @@ export async function PATCH(request, { params }) {
     const updated = await Quote.findByIdAndUpdate(id, q, { new: true, runValidators: true });
     if (!updated) return NextResponse.json({ success: false, error: "Quote not found" }, { status: 404 });
 
+    // convert to plain object for consistent JSON shape and include remark
+    const out = updated && updated.toObject ? updated.toObject() : updated;
+    console.log("✅ Quote updated. remark:", out.remark);
     return NextResponse.json(
-      { success: true, message: "Quote updated", data: updated },
+      { success: true, message: "Quote updated", data: out },
       { status: 200 }
     );
   } catch (err) {

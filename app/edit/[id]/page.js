@@ -11,6 +11,7 @@ import Inclusion from "../../../components/items/Inclusions";
 import Exclusion from "../../../components/items/exclusion";
 import Markup from "../../../components/items/Markup";
 import BasicDetails from "../../../components/items/BasicDetails";
+import Remark from "../../../components/items/Remark";
 
 
 export default function EditQuotePage() {
@@ -125,9 +126,11 @@ export default function EditQuotePage() {
   <BasicDetails syncWithStore={true} showNav={false} />
   <Accommodation syncWithStore={true} showNav={false} />
   <Meal syncWithStore={true} showNav={false} />
+ 
   <Inclusion syncWithStore={true} showNav={false} />
   <Exclusion syncWithStore={true} showNav={false} />
   <Markup syncWithStore={true} showNav={false} />
+   <Remark syncWithStore={true} />
 
         {/* Save All (bottom) */}
         <div className="pt-4">

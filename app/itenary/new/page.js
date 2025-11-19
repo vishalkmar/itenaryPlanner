@@ -9,6 +9,7 @@ import Meal from "@/components/items/Meal";
 import Inclusion from "@/components/items/Inclusions";
 import Exclusion from "@/components/items/exclusion";
 import Markup from "@/components/items/Markup";
+import Remark from "@/components/items/Remark";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -48,6 +49,7 @@ export default function NewItenary(){
                          },
                     ],
                     meal: { meals: [{ type: "Breakfast", price: 0 }], totalPrice: 0 },
+                    // remark will be synced by Remark component
                     inclusion: { inclusions: ["4 nights accommodation in 4★ hotel", "All Transfers", "Half-day Muscat city tour – Qurum Beach, Opera House (outside), Mutrah Souq, Mutrah Fort", "Full-day Nizwa tour – Nizwa Fort, Nizwa Souq", "Coastal tour for Sur – Wadi Shab, Bimmah Sinkhole, Fins Beach"], visaAmount: 0, customVisaCount: 1 },
                     exclusion: { exclusions: ["Airfare", "Lunch & Dinner", "Personal expense (Tips, Laundry, Beverage, etc.)", "Early check-in / Late checkout", "GST @5% & TCS @5% as per applicable travel cost"] },
                     totals: {
@@ -121,6 +123,7 @@ export default function NewItenary(){
                     <Meal syncWithStore={true} showNav={false} />
                     <Inclusion syncWithStore={true} showNav={false} />
                     <Exclusion syncWithStore={true} showNav={false} />
+                    <Remark syncWithStore={true} />
                     <Markup syncWithStore={true} showNav={false} />
 
                     {/* Submit button at bottom */}
