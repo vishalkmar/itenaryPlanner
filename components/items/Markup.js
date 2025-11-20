@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import useQuoteStore from "./ItenaryStore";
 
 export default function Markup({ syncWithStore = false, showNav = true, onNext = () => {}, onBack = () => {} }) {
@@ -10,13 +10,16 @@ export default function Markup({ syncWithStore = false, showNav = true, onNext =
   const [applyGstTcs, setApplyGstTcs] = useState(false);
 
   // Load initial values when in edit mode (syncWithStore=true)
+  // Only initialize once to avoid overwriting local checkbox state when the store updates
+  const _initRef = useRef(false);
   useEffect(() => {
-    if (syncWithStore && quoteData?.totals) {
+    if (!syncWithStore || _initRef.current) return;
+    if (quoteData?.totals) {
       const initialPercent = Number(quoteData.totals.markupPercent || 0);
       const initialApplyGstTcs = Boolean(quoteData.totals.applyGstTcs);
-      
       setPercent(initialPercent);
       setApplyGstTcs(initialApplyGstTcs);
+      _initRef.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [syncWithStore, quoteData?.totals]);
@@ -47,6 +50,35 @@ export default function Markup({ syncWithStore = false, showNav = true, onNext =
     updateStepData("totals", { ...existing, markupPercent: Number(percent), applyGstTcs });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [percent, applyGstTcs, syncWithStore]);
+
+  // When GST/TCS checkbox toggles, ensure the exclusion line is removed/added accordingly
+  useEffect(() => {
+    if (!syncWithStore) return;
+
+    const GST_LINE = "GST @5% & TCS @5% as per applicable travel cost";
+
+    // Normalize existing exclusions
+    const existingExclusions = Array.isArray(quoteData?.exclusion?.exclusions)
+      ? [...quoteData.exclusion.exclusions]
+      : [];
+
+    const hasLine = existingExclusions.some((e) => String(e || "").trim() === GST_LINE);
+
+    if (applyGstTcs) {
+      // remove the GST line if present
+      if (hasLine) {
+        const next = existingExclusions.filter((e) => String(e || "").trim() !== GST_LINE);
+        updateStepData("exclusion", { ...(quoteData.exclusion || {}), exclusions: next });
+      }
+    } else {
+      // ensure the GST line exists (append only if missing)
+      if (!hasLine) {
+        const next = [...existingExclusions, GST_LINE];
+        updateStepData("exclusion", { ...(quoteData.exclusion || {}), exclusions: next });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applyGstTcs, syncWithStore, quoteData?.exclusion]);
 
   const handlePercentChange = (v) => {
     const n = Number(v || 0);
