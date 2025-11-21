@@ -130,11 +130,11 @@ export async function POST(request) {
     // (visaAmount can be positive or negative based on whether visa is included)
     const grandTotal = Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) + Number(markupAmount) + Number(visaAmount);
 
-    // GST (5%) and TCS (5%) calculation
+    // GST (5%) and TCS (5%) calculation — sequential: GST first, then TCS on (grandTotal + GST)
     const applyGstTcs = q?.totals?.applyGstTcs || false;
-    const gstAmount = applyGstTcs ? Number((grandTotal * 5) / 100) : 0;
-    const tcsAmount = applyGstTcs ? Number((grandTotal * 5) / 100) : 0;
-    const finalTotal = grandTotal + gstAmount + tcsAmount;
+    const gstAmount = applyGstTcs ? Number((grandTotal * 0.05) || 0) : 0;
+    const tcsAmount = applyGstTcs ? Number(((grandTotal + gstAmount) * 0.05) || 0) : 0;
+    const finalTotal = Number(grandTotal + gstAmount + tcsAmount || 0);
 
     // compute price per person (finalTotal / pax)
     const pricePerPerson = Number((finalTotal / pax) || 0);

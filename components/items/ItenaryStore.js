@@ -92,9 +92,10 @@ const useQuoteStore = create(
 
           // GST (5%) and TCS (5%) calculation
           const applyGstTcs = qd?.totals?.applyGstTcs || false;
-          const gstAmount = applyGstTcs ? Number((grandTotal * 5) / 100) : 0;
-          const tcsAmount = applyGstTcs ? Number((grandTotal * 5) / 100) : 0;
-          const finalTotal = grandTotal + gstAmount + tcsAmount;
+          // Sequential GST then TCS: GST on grandTotal, then TCS on (grandTotal + gst)
+          const gstAmount = applyGstTcs ? Number((grandTotal * 0.05) || 0) : 0;
+          const tcsAmount = applyGstTcs ? Number(((grandTotal + gstAmount) * 0.05) || 0) : 0;
+          const finalTotal = Number(grandTotal + gstAmount + tcsAmount || 0);
 
           // price per person: divide finalTotal by PAX
           const pricePerPerson = Number((finalTotal / pax) || 0);

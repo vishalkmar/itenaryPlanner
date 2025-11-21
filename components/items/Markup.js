@@ -38,10 +38,10 @@ export default function Markup({ syncWithStore = false, showNav = true, onNext =
   // grandTotal: accommodation + activityCostTotal + meal + markupAmount + visaAmount
   const localGrand = Number(accommodationTotal) + Number(activityCostTotal) + Number(mealTotal) + Number(localMarkupAmount) + Number(visaAmount);
 
-  // GST (5%) and TCS (5%) calculation
-  const gstAmount = applyGstTcs ? Number((localGrand * 5) / 100) : 0;
-  const tcsAmount = applyGstTcs ? Number((localGrand * 5) / 100) : 0;
-  const totalWithGstTcs = localGrand + gstAmount + tcsAmount;
+  // Sequential calculation: GST on localGrand, then TCS on (localGrand + GST)
+  const gstAmount = applyGstTcs ? Number((localGrand * 0.05) || 0) : 0;
+  const tcsAmount = applyGstTcs ? Number(((localGrand + gstAmount) * 0.05) || 0) : 0;
+  const totalWithGstTcs = Number(localGrand + gstAmount + tcsAmount || 0);
 
   // Batch update totals and exclusions atomically to avoid losing one update
   useEffect(() => {
@@ -66,7 +66,26 @@ export default function Markup({ syncWithStore = false, showNav = true, onNext =
         if (!hasLine) nextExclusions = [...existingExclusions, GST_LINE];
       }
 
-      const nextTotals = { ...(prevQD.totals || {}), markupPercent: Number(percent), applyGstTcs };
+      // Compute sequential GST/TCS and totals for store
+      const pax = Number(prevQD?.basic?.pax || 1);
+      const nextTotals = {
+        ...(prevQD.totals || {}),
+        markupPercent: Number(percent),
+        applyGstTcs,
+        // keep existing computed fields where appropriate
+      };
+
+      // We'll attach gstAmount, tcsAmount, grandTotal, finalTotal and pricePerPerson
+      const computedGrand = Number(localGrand || 0);
+      const computedGst = applyGstTcs ? Number((computedGrand * 0.05) || 0) : 0;
+      const computedTcs = applyGstTcs ? Number(((computedGrand + computedGst) * 0.05) || 0) : 0;
+      const computedFinal = Number(computedGrand + computedGst + computedTcs || 0);
+
+      nextTotals.gstAmount = computedGst;
+      nextTotals.tcsAmount = computedTcs;
+      nextTotals.grandTotal = computedGrand;
+      nextTotals.finalTotal = computedFinal;
+      nextTotals.pricePerPerson = pax > 0 ? Number((computedFinal / pax) || 0) : 0;
 
       return {
         quoteData: {
