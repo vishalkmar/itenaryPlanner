@@ -25,6 +25,7 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
   const [pax, setPax] = useState(
     initial.pax !== undefined ? Number(initial.pax) : 0
   );
+  const [contactPhone, setContactPhone] = useState(initial.contactPhone || "");
   const [nightsAuto, setNightsAuto] = useState(0);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
       (b.pax !== undefined ? Number(b.pax) : 0) !== pax
     )
       setPax(b.pax !== undefined ? Number(b.pax) : 0);
+    if ((b.contactPhone || "") !== contactPhone) setContactPhone(b.contactPhone || "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quoteData]);
 
@@ -47,10 +49,7 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
     // Whenever startDate or endDate changes, auto calc nights
     const calculatedNights = getNightsBetweenDates(startDate, endDate);
     setNightsAuto(calculatedNights);
-    // If both dates are selected, update nights value
-    if (startDate && endDate && calculatedNights > 0) {
-      setNights(calculatedNights);
-    }
+    setNights(calculatedNights);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate]);
 
@@ -61,10 +60,11 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
       endDate,
       nights: Number(nights || 0),
       pax: Number(pax || 0),
+      contactPhone: contactPhone || "",
     };
     updateStepData("basic", payload);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startDate, endDate, nights, pax, syncWithStore]);
+  }, [startDate, endDate, nights, pax, contactPhone, syncWithStore]);
 
   return (
     <div className="w-full bg-black text-white rounded-2xl p-6 shadow-xl relative z-10">
@@ -132,6 +132,18 @@ export default function BasicDetails({ syncWithStore = false, showNav = true }) 
           />
         </div>
       </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="text-sm text-gray-400">Contact Phone</label>
+            <input
+              type="tel"
+              value={contactPhone}
+              onChange={(e) => setContactPhone(e.target.value)}
+              className="w-full p-2 rounded bg-white/5 text-white"
+              placeholder="Phone number used for PDF filename"
+            />
+          </div>
+        </div>
       {showNav && (
         <div className="flex justify-end mt-2">
           <button className="px-4 py-2 bg-white/20 rounded">Next</button>

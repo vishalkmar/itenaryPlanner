@@ -86,6 +86,8 @@ const QuoteSchema = new mongoose.Schema(
       endDate: { type: String, default: "" },
       nights: { type: Number, default: 0 },
       pax: { type: Number, default: 1 },
+      contactPhone: { type: String, default: "" },
+      // contactName removed — we only store contactPhone now
     },
 
     // Optional totals/metadata

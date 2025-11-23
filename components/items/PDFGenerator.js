@@ -7,12 +7,17 @@ import html2pdf from "html2pdf.js";
 export default function PDFGenerator({ quote }) {
   // For rename modal
   const [showRenameBox, setShowRenameBox] = useState(false);
-  const [filename, setFilename] = useState("");
   const inputRef = useRef(null);
 
-  // Button click to open modal
+  // We no longer prompt for filename here; use quote.basic.contactPhone only
   const handleBtnClick = () => {
-    setFilename(""); // blank for every open
+    // If basic contactPhone exists, generate directly
+    if (quote?.basic?.contactPhone) {
+      const label = quote.basic.contactPhone || `booking-${quote?._id || 'quote'}`;
+      generatePDF(label);
+      return;
+    }
+    // fallback: show rename box if no basic details provided
     setShowRenameBox(true);
     setTimeout(() => { if (inputRef.current) inputRef.current.focus(); }, 200);
   };
@@ -24,8 +29,9 @@ export default function PDFGenerator({ quote }) {
       return;
     }
 
-    // blank -> fallback name
-    const finalName = (name && name.trim()) ? name.trim() : `booking-confirmation-${quote?._id || "quote"}.pdf`;
+    // blank -> fallback name. sanitize name
+    const safe = (name && String(name).trim()) ? String(name).trim().replace(/[^a-zA-Z0-9-_\. ]/g, "-") : `booking-confirmation-${quote?._id || "quote"}`;
+    const finalName = `${safe}.pdf`;
 
     const htmlContent = generatePDFHTML(quote);
 
@@ -58,9 +64,9 @@ export default function PDFGenerator({ quote }) {
               ref={inputRef}
               className="mb-4 w-full border border-blue-400 px-3 py-2 rounded text-black bg-white"
               type="text"
-              value={filename}
-              onChange={e => setFilename(e.target.value)}
+              defaultValue=""
               placeholder="Enter PDF filename"
+              id="pdf-filename-input"
             />
             <div className="flex gap-2 justify-end">
               <button
@@ -70,7 +76,11 @@ export default function PDFGenerator({ quote }) {
                 Cancel
               </button>
               <button
-                onClick={() => generatePDF(filename)}
+                onClick={() => {
+                  const el = document.getElementById('pdf-filename-input');
+                  const v = el ? el.value : '';
+                  generatePDF(v);
+                }}
                 className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold"
               >
                 Download PDF

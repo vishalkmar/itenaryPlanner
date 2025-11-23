@@ -8,6 +8,7 @@ import { Trash2, Edit2, Eye } from "lucide-react";
 export default function DashboardPage() {
   const router = useRouter();
   const [quotes, setQuotes] = useState([]);
+  const [filterPhone, setFilterPhone] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(null);
@@ -37,6 +38,11 @@ export default function DashboardPage() {
 
     fetchQuotes();
   }, []);
+
+  // Filtered list derived from quotes and filterPhone
+  const filteredQuotes = filterPhone
+    ? quotes.filter((q) => (q.basic?.contactPhone || "").includes(filterPhone))
+    : quotes;
 
   // Delete quote
   const handleDelete = async (id) => {
@@ -68,12 +74,21 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold">Quotes Dashboard</h1>
-          <Link
+          <div className="flex items-center gap-3">
+            <input
+              type="search"
+              placeholder="Search by phone"
+              value={filterPhone}
+              onChange={(e) => setFilterPhone(e.target.value)}
+              className="px-3 py-2 rounded bg-white/5 text-white placeholder:text-gray-400"
+            />
+            <Link
             href="/itenary/new"
             className="bg-gradient-to-br from-cyan-500 to-emerald-500 hover:opacity-90 px-4 py-2 rounded-lg text-white font-semibold"
           >
             + New Quote
           </Link>
+          </div>
         </div>
 
         {/* Loading & Error States */}
@@ -83,12 +98,12 @@ export default function DashboardPage() {
         )}
 
         {/* Responsive Table */}
-        {!loading && !error && quotes.length > 0 && (
+        {!loading && !error && filteredQuotes.length > 0 && (
           <div className="overflow-x-auto border border-white/10 rounded-lg">
             <table className="w-full border-collapse text-sm md:text-base">
               <thead>
                 <tr className="bg-white/10 border-b border-white/10">
-                  <th className="p-3 text-left">ID</th>
+                  <th className="p-3 text-left">Phone</th>
                   <th className="p-3 text-left">Hotel</th>
                   <th className="p-3 text-left">Place</th>
                   <th className="p-3 text-left">Per Person Price (₹)</th>
@@ -98,12 +113,12 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {quotes.map((quote) => (
+                {filteredQuotes.map((quote) => (
                   <tr
                     key={quote._id}
                     className="border-b border-white/10 hover:bg-white/5 transition"
                   >
-                    <td className="p-3 font-mono text-sm">{quote._id}</td>
+                    <td className="p-3 font-mono text-sm">{quote.basic?.contactPhone || quote._id}</td>
                     <td className="p-3 font-medium truncate max-w-xs">
                       {quote.accommodation && quote.accommodation.length
                         ? (quote.accommodation[0].hotel || quote.accommodation[0].otherHotel || "-")

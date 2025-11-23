@@ -83,7 +83,7 @@ export default function QuotePreviewPage() {
 
         {/* Meta Info Card */}
         <div className="mb-8 p-5 bg-gradient-to-r from-white/10 to-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="text-gray-400 text-sm">Created Date</p>
               <p className="text-white font-semibold">{quote.createdAt ? new Date(quote.createdAt).toLocaleDateString() : '—'}</p>
@@ -91,6 +91,10 @@ export default function QuotePreviewPage() {
             <div>
               <p className="text-gray-400 text-sm">Created Time</p>
               <p className="text-white font-semibold">{quote.createdAt ? new Date(quote.createdAt).toLocaleTimeString() : '—'}</p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm">Contact</p>
+              <p className="text-white font-semibold">{quote.basic?.contactPhone ? `${quote.basic.contactPhone}` : '—'}</p>
             </div>
             {quote.meta?.title && (
               <div>

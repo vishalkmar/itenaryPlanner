@@ -33,6 +33,7 @@ const BasicZ = z.object({
   endDate: z.string().optional(),
   nights: z.number().optional().default(0),
   pax: z.number().optional().default(1),
+  contactPhone: z.string().optional().default(""),
 }).optional();
 
 const QuoteZ = z.object({
