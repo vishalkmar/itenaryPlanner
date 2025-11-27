@@ -118,6 +118,7 @@ export async function PATCH(request, { params }) {
       finalTotal,
       pricePerPerson,
       activityCostTotal,
+      printFinalTotal: Boolean(q?.totals?.printFinalTotal),
     };
 
     if (!q.inclusion) q.inclusion = {};

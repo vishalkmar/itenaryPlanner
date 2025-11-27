@@ -101,6 +101,7 @@ const useQuoteStore = create(
             finalTotal,
             pricePerPerson,
             activityCostTotal,
+            printFinalTotal: qd?.totals?.printFinalTotal || false,
           };
         },
 

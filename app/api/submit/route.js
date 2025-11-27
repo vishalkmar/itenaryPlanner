@@ -61,6 +61,7 @@ const QuoteZ = z.object({
     finalTotal: z.number().optional().default(0),
     pricePerPerson: z.number().optional().default(0),
     activityCostTotal: z.number().optional().default(0),
+    printFinalTotal: z.boolean().optional().default(false),
   }).optional(),
   meta: z.object({ title: z.string().optional(), userId: z.string().optional() }).optional(),
 });
@@ -149,6 +150,7 @@ export async function POST(request) {
       finalTotal,
       pricePerPerson,
       activityCostTotal,
+      printFinalTotal: Boolean(q?.totals?.printFinalTotal),
     };
 
     if (!q.inclusion) q.inclusion = {};

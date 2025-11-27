@@ -248,6 +248,12 @@ function generatePDFHTML(quote) {
   const tcsPerPerson = paxCount > 0 ? tcsAmount / paxCount : tcsAmount;
   const finalPerPerson = Number(totals?.pricePerPerson || (finalTotal / (paxCount || 1)));
 
+  // Display rules for PDF:
+  // - If totals.printFinalTotal && totals.applyGstTcs: show grandTotal in "Package Without Taxes" slot (not per-person)
+  // - If totals.printFinalTotal: show finalTotal in the final amount slot (instead of per-person)
+  const preTaxDisplay = (totals?.printFinalTotal && totals?.applyGstTcs) ? grandTotal : preTaxPerPerson;
+  const finalDisplay = (totals?.printFinalTotal) ? finalTotal : finalPerPerson;
+
   const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -418,7 +424,7 @@ function generatePDFHTML(quote) {
             ${totals.applyGstTcs ? `
             <div class="price-row">
               <div class="label pre-tax-title">Package Without Taxes</div>
-              <div class="value">₹ ${Number(preTaxPerPerson || 0).toLocaleString("en-IN", {maximumFractionDigits:2})}</div>
+              <div class="value">₹ ${ Number(preTaxDisplay || 0).toLocaleString("en-IN", {maximumFractionDigits:2})}</div>
             </div>
             <div class="price-row">
               <div class="label tax-note">GST @5% & TCS @5% as per applicable travel cost</div>
@@ -427,10 +433,10 @@ function generatePDFHTML(quote) {
             ` : `
            
             `}
-
+ 
             <div class="final-row">
-              <div class="label">Final Price per person</div>
-              <div class="value">₹ ${Number(finalPerPerson || 0).toLocaleString("en-IN", {maximumFractionDigits:2})}</div>
+              <div class="label">${totals.printFinalTotal ? 'Final Total Amount' : 'Final Price per person'}</div>
+              <div class="value">₹ ${Number(finalDisplay || 0).toLocaleString("en-IN", {maximumFractionDigits:2})}</div>
             </div>
           </div>
         </div>

@@ -115,6 +115,8 @@ const QuoteSchema = new mongoose.Schema(
       pricePerPerson: { type: Number, default: 0 },
       // activity cost total stored as itineraryTotal * 238 (INR multiplier)
       activityCostTotal: { type: Number, default: 0 },
+      // flag to print final total instead of per-person price in PDF
+      printFinalTotal: { type: Boolean, default: false },
     },
 
     meta: {

@@ -8,6 +8,7 @@ export default function Markup({ syncWithStore = false, showNav = true, onNext =
 
   const [percent, setPercent] = useState(0);
   const [applyGstTcs, setApplyGstTcs] = useState(false);
+  const [printFinalTotal, setPrintFinalTotal] = useState(false);
 
   // Load initial values when in edit mode (syncWithStore=true)
   // Only initialize once to avoid overwriting local checkbox state when the store updates
@@ -17,8 +18,10 @@ export default function Markup({ syncWithStore = false, showNav = true, onNext =
     if (quoteData?.totals) {
       const initialPercent = Number(quoteData.totals.markupPercent || 0);
       const initialApplyGstTcs = Boolean(quoteData.totals.applyGstTcs);
+      const initialPrintFinalTotal = Boolean(quoteData.totals.printFinalTotal);
       setPercent(initialPercent);
       setApplyGstTcs(initialApplyGstTcs);
+      setPrintFinalTotal(initialPrintFinalTotal);
       _initRef.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -72,6 +75,7 @@ export default function Markup({ syncWithStore = false, showNav = true, onNext =
         ...(prevQD.totals || {}),
         markupPercent: Number(percent),
         applyGstTcs,
+        printFinalTotal,
         // keep existing computed fields where appropriate
       };
 
@@ -96,7 +100,7 @@ export default function Markup({ syncWithStore = false, showNav = true, onNext =
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [percent, applyGstTcs, syncWithStore]);
+  }, [percent, applyGstTcs, printFinalTotal, syncWithStore]);
 
   const handlePercentChange = (v) => {
     const n = Number(v || 0);
@@ -143,6 +147,24 @@ export default function Markup({ syncWithStore = false, showNav = true, onNext =
             <div className="border-t border-white/20 pt-2 mt-2">
               <div className="text-emerald-400 font-bold">Final Total: ₹ {totalWithGstTcs.toFixed(2)}</div>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Print Final Total Instead of Per Person Checkbox */}
+      <div className="mb-4 p-3 bg-white/10 rounded-lg">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={printFinalTotal}
+            onChange={(e) => setPrintFinalTotal(e.target.checked)}
+            className="w-4 h-4 rounded"
+          />
+          <span className="text-sm font-semibold">Print Final Total in PDF (instead of Per Person)</span>
+        </label>
+        {printFinalTotal && (
+          <div className="mt-2 text-xs text-cyan-300">
+            ✓ PDF will display total amount instead of price per person
           </div>
         )}
       </div>
