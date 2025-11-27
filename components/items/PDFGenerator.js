@@ -397,7 +397,7 @@ function generatePDFHTML(quote) {
               <div class="offer-section">
                 <div class="offer-title">EXCLUSIONS</div>
                 <div class="offer-content">
-                  ${exclusionsList || "<div class='offer-item'>No exclusions specified</div>"}
+                  ${exclusionsList || "<div class='offer-item'>No exclusion specified</div>"}
                 </div>
               </div>
             </div>
