@@ -146,7 +146,7 @@ function generatePDFHTML(quote) {
         </div>
         <div style="flex:1; min-width:150px;">
           <div style="min-width:100px; font-weight:bold;">Location:</div>
-          <div style="color:#555;">${accommodation.otherPlace || accommodation.place || "—"}</div>
+          <div style="color:#555;">${accommodation.otherPlace || accommodation.place || "—-"}</div>
         </div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:11px; line-height:1.6; margin-top:6px;">
