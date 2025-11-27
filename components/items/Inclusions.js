@@ -27,8 +27,8 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
   const [customVisaCount, setCustomVisaCount] = useState(() => {
     if (quoteData?.inclusion?.customVisaCount !== undefined) return quoteData.inclusion.customVisaCount;
     if (quoteData?.totals?.customVisaCount !== undefined) return quoteData.totals.customVisaCount;
-    return Number(quoteData?.basic?.pax || 0);
-  }); // number of people with visa (default to pax)
+    return 0; // number of people WITHOUT visa (default to 0, meaning all have visa)
+  }); // number of people WITHOUT visa (default to 0)
   // explicit list of passenger indexes (1-based) who have visa
   const [visaPassengers, setVisaPassengers] = useState(() => {
     if (Array.isArray(quoteData?.inclusion?.visaPassengers)) return quoteData.inclusion.visaPassengers;
@@ -95,19 +95,10 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
     if (syncWithStore) {
       const pax = Number(quoteData?.basic?.pax || 1);
 
-      // Visa calculation driven by customVisaCount (preferred) — fallback: if user kept a "visa" string, treat as all pax
-      const hasVisaString = inclusions.some((item) => String(item || "").toLowerCase().includes("visa"));
-      let calculatedVisaAmount;
-      if (customVisaCount > 0) {
-        const visaPeople = Math.min(customVisaCount, pax);
-        const nonVisaPeople = pax - visaPeople;
-        calculatedVisaAmount = (2000 * visaPeople) + (-1500 * nonVisaPeople);
-      } else if (hasVisaString) {
-        // user left a visa string but custom count is 0 — treat as all pax
-        calculatedVisaAmount = 2000 * pax;
-      } else {
-        calculatedVisaAmount = -1500 * pax;
-      }
+      // Visa calculation: customVisaCount now represents people WITHOUT visa
+      // Formula: visaAmount = (2000 * pax) - (1500 * customVisaCount)
+      const nonVisaPeople = Math.min(Math.max(customVisaCount, 0), pax);
+      const calculatedVisaAmount = (2000 * pax) - (1500 * nonVisaPeople);
 
       // Persist inclusions without any raw 'visa' strings to avoid duplication — visa is represented by customVisaCount
       const normalizedInclusions = inclusions.filter((it) => !String(it || "").toLowerCase().includes("visa"));
@@ -127,31 +118,28 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
   let visaIncludeString = null;
   let visaExcludeString = null;
   if (typeof customVisaCount === 'number') {
-    if (customVisaCount === pax) {
-      visaIncludeString = "Visa included";
+    if (customVisaCount === 0) {
+      // All people have visa
+      visaIncludeString = "Visa included for all";
       visaExcludeString = null;
-    } else if (customVisaCount === 0) {
+    } else if (customVisaCount === pax) {
+      // No one has visa
       visaIncludeString = null;
       visaExcludeString = `Visa not included for ${pax} person(s)`;
     } else if (customVisaCount > 0 && customVisaCount < pax) {
-      visaIncludeString = `Visa included for ${customVisaCount} person(s)`;
-      visaExcludeString = `Visa not included for ${pax - customVisaCount} person(s)`;
+      // Mix: some have visa, some don't
+      visaIncludeString = `Visa included for ${pax - customVisaCount} person(s)`;
+      visaExcludeString = `Visa not included for ${customVisaCount} person(s)`;
     }
   }
 
   const handleNext = () => {
     const pax = Number(quoteData?.basic?.pax || 1);
-    const hasVisaString = inclusions.some((item) => String(item || "").toLowerCase().includes("visa"));
-    let calculatedVisaAmount;
-    if (customVisaCount > 0) {
-      const visaPeople = Math.min(customVisaCount, pax);
-      const nonVisaPeople = pax - visaPeople;
-      calculatedVisaAmount = (2000 * visaPeople) + (-1500 * nonVisaPeople);
-    } else if (hasVisaString) {
-      calculatedVisaAmount = 2000 * pax;
-    } else {
-      calculatedVisaAmount = -1500 * pax;
-    }
+    
+    // Visa calculation: customVisaCount now represents people WITHOUT visa
+    // Formula: visaAmount = (2000 * pax) - (1500 * customVisaCount)
+    const nonVisaPeople = Math.min(Math.max(customVisaCount, 0), pax);
+    const calculatedVisaAmount = (2000 * pax) - (1500 * nonVisaPeople);
 
     const normalizedInclusions = inclusions.filter((it) => !String(it || "").toLowerCase().includes("visa"));
 
@@ -301,7 +289,7 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
           <h3 className="text-lg font-semibold mb-3 text-cyan-400">Visa Configuration</h3>
           <div className="flex flex-col gap-3">
             <label className="text-sm text-gray-300">
-              How many people need visa? (Out of {quoteData?.basic?.pax || 1} pax)
+              How many people do NOT need visa? (Out of {quoteData?.basic?.pax || 1} pax)
             </label>
             <div className="flex items-center gap-3">
               <input
@@ -316,18 +304,14 @@ export default function Inclusion({ onNext = () => {}, onBack = () => {}, syncWi
             </div>
             {customVisaCount > 0 && (
               <div className="text-sm text-cyan-300 mt-2 p-2 bg-cyan-400/10 rounded">
-                ✓ {customVisaCount} person(s) with visa: +₹{(2000 * customVisaCount).toLocaleString('en-IN')}
-                {customVisaCount < (quoteData?.basic?.pax || 1) && (
-                  <>
-                    <br />
-                    ✓ {(quoteData?.basic?.pax || 1) - customVisaCount} person(s) without visa: -₹{(1500 * ((quoteData?.basic?.pax || 1) - customVisaCount)).toLocaleString('en-IN')}
-                  </>
-                )}
+                ✓ {pax - customVisaCount} person(s) with visa: +₹{(2000 * (pax - customVisaCount)).toLocaleString('en-IN')}
+                <br />
+                ✓ {customVisaCount} person(s) without visa: -₹{(1500 * customVisaCount).toLocaleString('en-IN')}
               </div>
             )}
             {customVisaCount === 0 && (
-              <div className="text-sm text-amber-300 mt-2 p-2 bg-amber-400/10 rounded">
-                ℹ️ All {quoteData?.basic?.pax || 1} people without visa: -₹{(1500 * (quoteData?.basic?.pax || 1)).toLocaleString('en-IN')}
+              <div className="text-sm text-cyan-300 mt-2 p-2 bg-cyan-400/10 rounded">
+                ✓ All {pax} person(s) with visa: +₹{(2000 * pax).toLocaleString('en-IN')}
               </div>
             )}
           </div>

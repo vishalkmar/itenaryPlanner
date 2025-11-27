@@ -44,23 +44,13 @@ export async function PATCH(request, { params }) {
     }
     const mealTotal = q?.meal?.totalPrice || 0;
 
-    const hasVisa = Array.isArray(q?.inclusion?.inclusions)
-      ? q.inclusion.inclusions.some((it) => String(it || "").toLowerCase().includes("visa"))
-      : false;
-
+    // visa logic: customVisaCount represents people WITHOUT visa (default 0 = all have visa)
     const pax = Number(q?.basic?.pax || 1);
-    const customVisaCount = (typeof q?.inclusion?.customVisaCount === 'number') ? Number(q.inclusion.customVisaCount) : (hasVisa ? pax : 0);
+    const customVisaCount = (typeof q?.inclusion?.customVisaCount === 'number') ? Number(q.inclusion.customVisaCount) : 0;
 
-    let visaAmount;
-    if (customVisaCount > 0) {
-      const visaPeople = Math.min(customVisaCount, pax);
-      const nonVisaPeople = pax - visaPeople;
-      visaAmount = (2000 * visaPeople) + (-1500 * nonVisaPeople);
-    } else if (hasVisa) {
-      visaAmount = 2000 * pax;
-    } else {
-      visaAmount = -1500 * pax;
-    }
+    const nonVisaPeople = Math.min(Math.max(customVisaCount, 0), pax);
+    const visaAmount = (2000 * pax) - (1500 * nonVisaPeople);
+    const hasVisa = visaAmount > 0;
 
     const mainTotal = Number(itineraryTotal) + Number(accommodationTotal) + Number(mealTotal) + Number(visaAmount);
 

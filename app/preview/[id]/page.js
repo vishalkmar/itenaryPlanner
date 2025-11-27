@@ -282,11 +282,11 @@ export default function QuotePreviewPage() {
                       </li>
                   ))}
 
-                  {/* If customVisaCount > 0, show an inclusion string describing the included visas */}
-                  {quote.inclusion?.customVisaCount > 0 && (
+                  {/* If customVisaCount < pax, some have visa included */}
+                  {quote.inclusion?.customVisaCount !== quote.basic?.pax && (
                     <li className="flex items-start gap-2 text-gray-200">
                       <span className="text-green-400 font-bold mt-0.5">•</span>
-                      <span>Visa included for {quote.inclusion.customVisaCount} person(s)</span>
+                      <span>Visa included for {(quote.basic?.pax || 0) - (quote.inclusion?.customVisaCount || 0)} person(s)</span>
                     </li>
                   )}
                 </ul>
@@ -295,26 +295,26 @@ export default function QuotePreviewPage() {
               )}
               {quote.inclusion?.visaAmount !== undefined && (
                 <div className="mt-4 pt-4 border-t border-white/10">
-                  {quote.inclusion?.customVisaCount > 0 && quote.basic?.pax > quote.inclusion.customVisaCount && (
+                  {quote.inclusion?.customVisaCount > 0 && quote.inclusion?.customVisaCount < (quote.basic?.pax || 0) && (
                     <>
                       <p className="text-gray-400 text-xs mb-2">Visa Breakdown</p>
                       <div className="text-sm space-y-1 mb-3">
                         <div className="flex justify-between">
-                          <span className="text-green-300">✓ {quote.inclusion.customVisaCount} person(s) with visa:</span>
-                          <span className="text-green-400 font-semibold">+INR {Number(2000 * quote.inclusion.customVisaCount).toLocaleString('en-IN')}</span>
+                          <span className="text-green-300">✓ {(quote.basic?.pax || 0) - quote.inclusion.customVisaCount} person(s) with visa:</span>
+                          <span className="text-green-400 font-semibold">+INR {Number(2000 * ((quote.basic?.pax || 0) - quote.inclusion.customVisaCount)).toLocaleString('en-IN')}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-red-300">✗ {quote.basic.pax - quote.inclusion.customVisaCount} person(s) without visa:</span>
-                          <span className="text-red-400 font-semibold">-INR {Number(1500 * (quote.basic.pax - quote.inclusion.customVisaCount)).toLocaleString('en-IN')}</span>
+                          <span className="text-red-300">✗ {quote.inclusion.customVisaCount} person(s) without visa:</span>
+                          <span className="text-red-400 font-semibold">-INR {Number(1500 * quote.inclusion.customVisaCount).toLocaleString('en-IN')}</span>
                         </div>
                       </div>
                     </>
                   )}
                   {quote.inclusion?.customVisaCount === 0 && (
-                    <p className="text-gray-400 text-xs mb-2">Visa Amount (All without visa):</p>
+                    <p className="text-gray-400 text-xs mb-2">Visa Amount (All with visa):</p>
                   )}
                   {quote.inclusion?.customVisaCount === quote.basic?.pax && (
-                    <p className="text-gray-400 text-xs mb-2">Visa Amount (All with visa):</p>
+                    <p className="text-gray-400 text-xs mb-2">Visa Amount (All without visa):</p>
                   )}
                   <p className="text-lg font-bold text-emerald-400">INR {Number(quote.inclusion.visaAmount||0).toLocaleString('en-IN')}</p>
                 </div>

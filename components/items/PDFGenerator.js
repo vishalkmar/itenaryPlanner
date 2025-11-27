@@ -193,11 +193,18 @@ function generatePDFHTML(quote) {
   // inclusionsWithMeals.push("Meals: Breakfast");
 
   // Add conditional visa inclusion string based on customVisaCount
+  // customVisaCount now represents people WITHOUT visa
   if (typeof inclusion?.customVisaCount === 'number') {
-    if (inclusion.customVisaCount === basic.pax) {
+    const withoutVisa = inclusion.customVisaCount || 0;
+    const withVisa = (basic.pax || 0) - withoutVisa;
+    if (withoutVisa === 0) {
+      // All have visa
       inclusionsWithMeals.push("Visa included");
-    } else if (inclusion.customVisaCount > 0) {
-      inclusionsWithMeals.push(`Visa included for ${inclusion.customVisaCount} person(s)`);
+    } else if (withoutVisa === basic.pax) {
+      // No one has visa - but this would be in exclusions
+    } else if (withVisa > 0) {
+      // Some have visa
+      inclusionsWithMeals.push(`Visa included for ${withVisa} person(s)`);
     }
   }
 
@@ -215,7 +222,8 @@ function generatePDFHTML(quote) {
     if (t.includes('dinner') && mealTypes.includes('dinner')) return false;
     return true;
   });
-  const visaExcludedCount = (inclusion?.customVisaCount !== undefined && basic?.pax !== undefined) ? (basic.pax - (inclusion.customVisaCount || 0)) : 0;
+  // customVisaCount now represents people WITHOUT visa
+  const visaExcludedCount = (inclusion?.customVisaCount !== undefined && basic?.pax !== undefined) ? Number(inclusion.customVisaCount) : 0;
   const exclusionsWithVisa = [...exclusionsFiltered];
   if (visaExcludedCount > 0) {
     if (visaExcludedCount === basic.pax) {
