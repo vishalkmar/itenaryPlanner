@@ -2,28 +2,72 @@
 "use client";
 import { useState } from "react";
 import { quoteToHtml } from "@/lib/pdf-template-client";
+import { generateDocx } from "@/lib/docx-generator";
+
 export default function GeneratePdfButton({ id }){
   function sanitizeFileName(name){
     if(!name) return "quote";
     const s = name.toString().trim().replace(/[\/:*?\"<>|]+/g, " ");
     return s.replace(/\s+/g, "_").slice(0,120);
   }
-  const [loading,setLoading]=useState(false);
-  async function generate(){
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [docxLoading, setDocxLoading] = useState(false);
+  
+  async function generatePdf(){
     try{
-      setLoading(true);
+      setPdfLoading(true);
       // fetch single quote document
       const res = await fetch(`/api/quote/${id}`);
       const json = await res.json();
-      const q = json?.data || json; // support both shapes
+      const q = json?.data || json;
       const html = quoteToHtml(q);
       const html2pdf = (await import("html2pdf.js")).default;
-      const fname = sanitizeFileName(q.agentSubject || q.subject || `quote_${id}`) + ".pdf";
+      // Use contactPhone as filename
+      const fname = sanitizeFileName(q.basic?.contactPhone || q.agentSubject || q.subject || `quote_${id}`) + ".pdf";
       const opt = { margin:10, filename: fname, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} };
       await html2pdf().from(html).set(opt).save();
-    } finally { setLoading(false); }
+    } catch(err) {
+      console.error("Error generating PDF:", err);
+      alert("Error generating PDF document");
+    } finally { setPdfLoading(false); }
   }
-  return (<button className="btn btn-ghost" type="button" onClick={generate} disabled={loading}>{loading ? "Generating..." : "Download PDF"}</button>);
+
+  async function generateWord(){
+    try{
+      setDocxLoading(true);
+      // fetch single quote document
+      const res = await fetch(`/api/quote/${id}`);
+      const json = await res.json();
+      const q = json?.data || json;
+      // Use contactPhone as filename
+      const fname = sanitizeFileName(q.basic?.contactPhone || q.agentSubject || q.subject || `quote_${id}`) + ".docx";
+      await generateDocx(q, fname);
+    } catch(err) {
+      console.error("Error generating DOCX:", err);
+      alert("Error generating DOCX document");
+    } finally { setDocxLoading(false); }
+  }
+
+  return (
+    <div className="flex gap-2">
+      <button 
+        className="btn btn-ghost" 
+        type="button" 
+        onClick={generatePdf} 
+        disabled={pdfLoading || docxLoading}
+      >
+        {pdfLoading ? "Generating..." : "📄 Download PDF"}
+      </button>
+      <button 
+        className="btn btn-ghost" 
+        type="button" 
+        onClick={generateWord} 
+        disabled={pdfLoading || docxLoading}
+      >
+        {docxLoading ? "Generating..." : "📝 Download DOCX"}
+      </button>
+    </div>
+  );
 }
 
 

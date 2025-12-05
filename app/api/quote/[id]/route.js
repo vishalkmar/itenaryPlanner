@@ -5,7 +5,7 @@ import Quote from "@/models/Quote";
 // GET /api/quote/:id
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     if (!id) return NextResponse.json({ success: false, error: "Missing id" }, { status: 400 });
 
     await dbConnect();
@@ -25,7 +25,7 @@ export async function GET(request, { params }) {
 // DELETE /api/quote/:id
 export async function DELETE(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     if (!id) return NextResponse.json({ success: false, error: "Missing id" }, { status: 400 });
 
     await dbConnect();
@@ -46,7 +46,7 @@ export async function DELETE(request, { params }) {
 // PATCH /api/quote/:id — update/edit quote
 export async function PATCH(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     if (!id) return NextResponse.json({ success: false, error: "Missing id" }, { status: 400 });
 
     const body = await request.json();

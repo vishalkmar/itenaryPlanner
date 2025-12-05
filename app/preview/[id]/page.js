@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import PDFGenerator from "@/components/items/PDFGenerator";
+import GeneratePdfButton from "@/components/GeneratePdfButton";
 
 
 export default function QuotePreviewPage() {
@@ -76,7 +76,7 @@ export default function QuotePreviewPage() {
             <p className="text-gray-400 text-sm mt-1">Quote ID: <span className="font-mono text-gray-300">{quote._id?.slice(-8)}</span></p>
           </div>
           <div className="flex items-center gap-3 mt-4 md:mt-0">
-            {quote && <PDFGenerator quote={quote} />}
+            {quote && <GeneratePdfButton id={quote._id} />}
             <button onClick={() => router.back()} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition">← Back</button>
           </div>
         </div>
