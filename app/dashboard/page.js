@@ -121,10 +121,10 @@ export default function DashboardPage() {
                     <td className="p-3 font-mono text-sm">{quote.basic?.contactPhone || quote._id}</td>
                     <td className="p-3 font-medium truncate max-w-xs">
                       {quote.accommodation && quote.accommodation.length
-                        ? (quote.accommodation[0].hotel || quote.accommodation[0].otherHotel || "-")
+                        ? (quote.accommodation[0].otherHotel || quote.accommodation[0].hotel ||  "-")
                         : "-"}
                     </td>
-                    <td className="p-3 truncate max-w-xs">{quote.accommodation && quote.accommodation.length ? (quote.accommodation[0].place || quote.accommodation[0].otherPlace || "-") : "-"}</td>
+                    <td className="p-3 truncate max-w-xs">{quote.accommodation && quote.accommodation.length ? (quote.accommodation[0].otherPlace || quote.accommodation[0].place ||  "-") : "-"}</td>
                     <td className="p-3 font-semibold text-emerald-400">{quote.totals?.pricePerPerson?.toLocaleString() ?? "—"}</td>
                     <td className="p-3 text-xs hidden lg:table-cell text-gray-400">
                       {quote.createdAt ? (
